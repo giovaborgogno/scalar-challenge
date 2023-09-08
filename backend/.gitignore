@@ -1,0 +1,57 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+/utils/__pycache__/
+/apps/__pycache__/
+/apps/cart/__pycache__/
+/apps/option/__pycache__/
+/apps/stock/__pycache__/
+/apps/category/__pycache__/
+/apps/coupons/__pycache__/
+/apps/orders/__pycache__/
+/apps/payment/__pycache__/
+/apps/product/__pycache__/
+/apps/shipping/__pycache__/
+/apps/user/__pycache__/
+/apps/user_profile/__pycache__/
+/apps/wishlist/__pycache__/
+/apps/variant/__pycache__/
+/apps/wishlist/__pycache__/
+/apps/attribute/__pycache__/
+/apps/blog/__pycache__/
+
+/core/__pycache__
+**/__pycache__
+
+# production
+/env
+/venv
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+.env
+core/.env
+
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vercel
+
+
+/static_files
+
+/static_files
+

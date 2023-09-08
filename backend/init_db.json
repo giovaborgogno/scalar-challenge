@@ -1,0 +1,382 @@
+[
+    {
+        "model": "user.useraccount",
+        "pk": 1,
+        "fields": {
+            "email": "user@gmail.com",
+            "password": "argon2$argon2i$v=19$m=512,t=2,p=2$WGppVW1yejRHZm1H$NTIcniSoAffzkyfcCH5OZw",
+            "first_name": "John",
+            "last_name": "Doe",
+            "is_active": true,
+            "is_staff": false,
+            "role": "user",
+            "photo": "user/default/default.webp"
+        }
+    },
+    {
+        "model": "user.useraccount",
+        "pk": 2,
+        "fields": {
+            "email": "critic@gmail.com",
+            "password": "argon2$argon2i$v=19$m=512,t=2,p=2$WGppVW1yejRHZm1H$NTIcniSoAffzkyfcCH5OZw",
+            "first_name": "Alice",
+            "last_name": "Cowel",
+            "is_active": true,
+            "is_staff": false,
+            "role": "critic",
+            "photo": "user/default/default.webp"
+        }
+    },
+    {
+        "model": "user.useraccount",
+        "pk": 3,
+        "fields": {
+            "email": "admin@gmail.com",
+            "password": "argon2$argon2i$v=19$m=512,t=2,p=2$WGppVW1yejRHZm1H$NTIcniSoAffzkyfcCH5OZw",
+            "first_name": "Eva",
+            "last_name": "Admin",
+            "is_active": true,
+            "is_staff": true,
+            "role": "admin",
+            "photo": "user/default/default.webp"
+        }
+    },
+    {
+        "model": "user.useraccount",
+        "pk": 4,
+        "fields": {
+            "email": "superuser@gmail.com",
+            "password": "argon2$argon2i$v=19$m=512,t=2,p=2$WGppVW1yejRHZm1H$NTIcniSoAffzkyfcCH5OZw",
+            "first_name": "Super",
+            "last_name": "User",
+            "is_active": true,
+            "is_staff": true,
+            "is_superuser": true,
+            "role": "admin",
+            "photo": "user/default/default.webp"
+        }
+    },
+    {
+        "model": "user.useraccount",
+        "pk": 5,
+        "fields": {
+            "email": "critic2@gmail.com",
+            "password": "argon2$argon2i$v=19$m=512,t=2,p=2$WGppVW1yejRHZm1H$NTIcniSoAffzkyfcCH5OZw",
+            "first_name": "Bob",
+            "last_name": "Smith",
+            "is_active": true,
+            "is_staff": false,
+            "role": "critic",
+            "photo": "user/default/default_5.png"
+        }
+    },
+    {
+        "model": "user.useraccount",
+        "pk": 6,
+        "fields": {
+            "email": "critic3@gmail.com",
+            "password": "argon2$argon2i$v=19$m=512,t=2,p=2$WGppVW1yejRHZm1H$NTIcniSoAffzkyfcCH5OZw",
+            "first_name": "Carol",
+            "last_name": "Page",
+            "is_active": true,
+            "is_staff": false,
+            "role": "critic",
+            "photo": "user/default/default_6.png"
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 1,
+        "fields": {
+            "title": "Sound of Freedom",
+            "slug": "sound-of-freedom",
+            "release_date": "2023-06-01",
+            "genre": "Thriller",
+            "plot": "A former federal agent embarks on a dangerous mission to save a girl from ruthless child traffickers. Time is running out, and he ventures into the Colombian jungle, risking his life to free her from a fate worse than death.",
+            "trailer_url": "https://www.youtube.com/embed/H82uvLvszQ0?si=NpbtC3QjySz6p52x",
+            "status": "Published",
+            "rating": null,
+            "users_rating": "4.0"
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 2,
+        "fields": {
+            "title": "Top Gun: Maverick",
+            "slug": "top-gun-maverick",
+            "release_date": "2022-05-27",
+            "genre": "Action",
+            "plot": "After over thirty years of service as one of the Navy's top aviators, Pete \"Maverick\" Mitchell is where he belongs, pushing the envelope as a courageous test pilot and dodging the advancement in rank that would ground him. When he is tasked with training a group of elite fighter pilots for a specialized mission, Maverick encounters Lieutenant Bradley Bradshaw, the son of his late friend \"Goose.\" Maverick must confront his deepest fears as he faces his past demons and takes on a mission that demands the ultimate sacrifice from the pilots who venture into it.",
+            "trailer_url": "https://www.youtube.com/embed/giXco2jaZ_4?si=ceU5arOdjCg-x1xuA",
+            "status": "Published",
+            "rating": null,
+            "users_rating": "5.0"
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 3,
+        "fields": {
+            "title": "Jurassic World Dominion",
+            "slug": "jurassic-world-dominion",
+            "release_date": "2022-06-10",
+            "genre": "Action",
+            "plot": "Director Colin Trevorrow returns to the helm for this new installment in the Jurassic World franchise. This time, the dinosaurs have escaped from their enclosures and spread across the world, leading to a coexistence of humans and dinosaurs. Chris Pratt, Bryce Dallas Howard, Sam Neill, Laura Dern, Jeff Goldblum, and BD Wong reprise their roles from the previous films.",
+            "trailer_url": "https://www.youtube.com/embed/fb5ELWi-ekk?si=38udqjkqz8_sHp0P",
+            "status": "Published",
+            "rating": "3.7",
+            "users_rating": null
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 4,
+        "fields": {
+            "title": "The Batman",
+            "slug": "the-batman",
+            "release_date": "2022-03-04",
+            "genre": "Action",
+            "plot": "Robert Pattinson portrays a Batman in his early years of crime-fighting. The Dark Knight faces off against the sadistic Riddler (Paul Dano), who is spreading chaos and terror throughout Gotham City. Zoe Kravitz, Jeffrey Wright, Colin Farrell, and Andy Serkis round out the cast.",
+            "trailer_url": "https://www.youtube.com/embed/mqqft2x_Aa4?si=Atr3a8IgeeGJ5DQk",
+            "status": "Published",
+            "rating": "4.5",
+            "users_rating": null
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 5,
+        "fields": {
+            "title": "Elvis",
+            "slug": "elvis",
+            "release_date": "2022-06-24",
+            "genre": "Biography",
+            "plot": "Baz Luhrmann directs this biographical film about Elvis Presley, portrayed by Austin Butler. The movie follows the life of the King of Rock and Roll, from his humble beginnings to worldwide stardom. Tom Hanks plays his manager, Colonel Tom Parker.",
+            "trailer_url": "https://www.youtube.com/embed/wBDLRvjHVOY?si=yewcIM6PfrK930YM",
+            "status": "Published",
+            "rating": "4.0",
+            "users_rating": null
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 11,
+        "fields": {
+            "title": "The Black Phone",
+            "slug": "the-black-phone",
+            "release_date": "2022-06-24",
+            "genre": "Horror",
+            "plot": "In 1978, Finney Shaw, a 13-year-old boy, is kidnapped by a serial killer and locked in a soundproof basement. When Finney finds a disconnected phone in the basement, he discovers that he can hear the voices of the killer's previous victims, who are trying to help him escape.",
+            "trailer_url": "https://www.youtube.com/embed/3eGP6im8AZA?si=MWy7Hb01UaAiTtl-",
+            "status": "Published",
+            "rating": null,
+            "users_rating": "4.0"
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 12,
+        "fields": {
+            "title": "Men",
+            "slug": "men",
+            "release_date": "2022-05-20",
+            "genre": "Drama",
+            "plot": "Harper Marlowe (Jessie Buckley) is a woman who travels alone to the English countryside to recover from the death of her husband. There, she begins to experience a series of strange and disturbing phenomena, leading her to question her own sanity.",
+            "trailer_url": "https://www.youtube.com/embed/pt81CJcWZy8?si=pRnNEtEh0HbJ4Yc7",
+            "status": "Published",
+            "rating": "3.5",
+            "users_rating": null
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 13,
+        "fields": {
+            "title": "Everything Everywhere All at Once",
+            "slug": "everything-everywhere-all-at-once",
+            "release_date": "2022-03-11",
+            "genre": "Comedy",
+            "plot": "Evelyn Wang (Michelle Yeoh) is a Chinese-American woman going through a rough patch in her life. Her business is bankrupt, her daughter is about to get married, and her husband is having an affair. One day, Evelyn discovers that she is the only one who can save the world from an interdimensional threat.",
+            "trailer_url": "https://www.youtube.com/embed/wxN1T1uxQ2g?si=OYb9mx1uPSkiEkT8",
+            "status": "Published",
+            "rating": "5.0",
+            "users_rating": null
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 14,
+        "fields": {
+            "title": "The Unbearable Weight of Massive Talent",
+            "slug": "the-unbearable-weight-of-massive-talent",
+            "release_date": "2022-04-21",
+            "genre": "Comedy",
+            "plot": "Nicolas Cage plays a fictionalized version of himself who finds himself in dire financial straits. To make some money, he agrees to attend the birthday party of a Mexican billionaire who happens to be a fan. However, the party turns into a nightmare when the billionaire is kidnapped by the CIA. Cage must use his acting skills to save him.",
+            "trailer_url": "https://www.youtube.com/embed/x2YHPZMj8r4?si=SpggsYj-2Js5XNNr",
+            "status": "Published",
+            "rating": "4.5",
+            "users_rating": "5.0"
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 21,
+        "fields": {
+            "title": "The Power of the Dog",
+            "slug": "the-power-of-the-dog",
+            "release_date": "2021-11-12",
+            "genre": "Drama",
+            "plot": "In 1925, brothers Phil and George Burbank own a cattle ranch in Montana. Phil is a cruel and ruthless man who taunts his brother and his wife, Rose, a widow who has remarried. George, on the other hand, is a kind man trying to protect Rose from Phil.",
+            "trailer_url": "https://www.youtube.com/embed/LRDPo0CHrko?si=y_xZoCNeJ19e_TZc",
+            "status": "Published",
+            "rating": null,
+            "users_rating": null
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 22,
+        "fields": {
+            "title": "Belfast",
+            "slug": "belfast",
+            "release_date": "2021-11-12",
+            "genre": "Drama",
+            "plot": "In 1969, Buddy, a nine-year-old boy, lives in Belfast, Northern Ireland, with his family. The city is in the midst of a religious conflict, and Buddy must deal with the fear and violence that surround him.",
+            "trailer_url": "https://www.youtube.com/embed/Ja3PPOnJQ2k?si=1JFCaX0DUDM30-K9",
+            "status": "Published",
+            "rating": null,
+            "users_rating": null
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 23,
+        "fields": {
+            "title": "Licorice Pizza",
+            "slug": "licorice-pizza",
+            "release_date": "2021-11-26",
+            "genre": "Comedy",
+            "plot": "In 1973, Gary Valentine, a 14-year-old teenager, falls in love with Alana Kane, a 25-year-old woman. The couple embarks on a series of adventures while dealing with love, sex, and coming of age.",
+            "trailer_url": "https://www.youtube.com/embed/ofnXPwUPENo?si=kgB9vHa_RhNRfRS1",
+            "status": "Draft",
+            "rating": null,
+            "users_rating": null
+        }
+    },
+    {
+        "model": "movie.movie",
+        "pk": 24,
+        "fields": {
+            "title": "Spider-Man: No Way Home",
+            "slug": "spider-man-no-way-home",
+            "release_date": "2021-12-4",
+            "genre": "Action",
+            "plot": "After revealing his identity to the world, Peter Parker seeks the help of Doctor Strange to erase the memories of everyone who knows he is Spider-Man. However, the spell goes awry and opens a portal to other universes, allowing villains from other realities to arrive on Earth.",
+            "trailer_url": "https://www.youtube.com/embed/JfVOs4VSpmA?si=dNLuhGBOLj1tS0NW",
+            "status": "Draft",
+            "rating": null,
+            "users_rating": null
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 1,
+        "fields": {
+            "rating": 4.0,
+            "comment": "Good Movie",
+            "movie_id": 1,
+            "user_id": 1
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 2,
+        "fields": {
+            "rating": 5.0,
+            "comment": "Excellent!",
+            "movie_id": 2,
+            "user_id": 1
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 3,
+        "fields": {
+            "rating": 3.7,
+            "comment": "It was okay",
+            "movie_id": 3,
+            "user_id": 2
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 4,
+        "fields": {
+            "rating": 4.5,
+            "comment": "Really enjoyed it!",
+            "movie_id": 4,
+            "user_id": 5
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 5,
+        "fields": {
+            "rating": 4.0,
+            "comment": "A must-see!",
+            "movie_id": 5,
+            "user_id": 6
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 6,
+        "fields": {
+            "rating": 4.0,
+            "comment": "Very suspenseful",
+            "movie_id": 11,
+            "user_id": 1
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 7,
+        "fields": {
+            "rating": 3.5,
+            "comment": "Not bad",
+            "movie_id": 12,
+            "user_id": 2
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 8,
+        "fields": {
+            "rating": 5.0,
+            "comment": "Amazing!",
+            "movie_id": 13,
+            "user_id": 5
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 9,
+        "fields": {
+            "rating": 4.5,
+            "comment": "Very funny",
+            "movie_id": 14,
+            "user_id": 6
+        }
+    },
+    {
+        "model": "review.review",
+        "pk": 10,
+        "fields": {
+            "rating": 5.0,
+            "comment": "A must-see for fans of the original",
+            "movie_id": 14,
+            "user_id": 1
+        }
+    }
+]

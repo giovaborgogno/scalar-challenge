@@ -1,0 +1,79 @@
+version: '3.8'
+services:
+  backend:
+    container_name: scalar_backend
+    build:
+      context: ./backend
+    volumes:
+      - backend_data:/app/data
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  frontend:
+    container_name: scalar_frontend
+    # command: npm run dev
+    build:
+      context: ./frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - frontend_node_modules:/app/node_modules
+    networks:
+      - app-network
+    depends_on:
+      - backend
+      - socket
+
+  socket:
+    container_name: scalar_socket
+    build:
+      context: ./socket
+    ports:
+      - 4000:4000
+    volumes:
+      - socket_node_modules:/app/node_modules
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  db:
+    image: postgres
+    container_name: scalar_postgresql
+    restart: always
+    environment:
+        POSTGRES_DB: scalar
+        POSTGRES_USER: scalar
+        POSTGRES_PASSWORD: scalar
+    ports:
+      - 5433:5432
+    volumes:
+      - .dbdata:/var/lib/postgresql
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:6-jammy
+    container_name: scalar_mongodb
+    restart: always
+    ports:
+      - '27018:27017'
+    volumes:
+      - dbdata6:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+  dbdata6:
+  frontend_node_modules:
+  socket_node_modules:
+  backend_data:

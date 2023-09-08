@@ -1,0 +1,10 @@
+env
+venv
+node_modules
+.next
+/.next/
+/.next
+/node_modules
+.env
+**/__pycache__
+/static_files
