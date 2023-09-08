@@ -43,7 +43,7 @@ function ChatFooter({ roomId }: { roomId: string }) {
   return (
     <>{
       session?
-      <div className="w-full basis-[8%] border-t-2 p-2 flex items-center gap-4">
+      <div className="fixed bottom-0 left-0 sm:relative bg-white dark:bg-neutral-900 w-full basis-[8%] border-t-2 p-2 flex items-center gap-4">
 
       <div className="relative w-full ">
         <div className="absolute -right-8 sm:right-0 bottom-12 ">
@@ -89,7 +89,7 @@ function ChatFooter({ roomId }: { roomId: string }) {
       )}
     </div>
       :
-<div className="w-full basis-[8%] border-t-2 p-2 flex items-center gap-4">
+<div className="fixed bottom-0 left-0 sm:relative w-full basis-[8%] border-t-2 p-2 flex items-center gap-4">
 
 <div className="relative w-full ">
         <BsEmojiSmileFill

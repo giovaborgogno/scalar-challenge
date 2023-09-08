@@ -43,7 +43,7 @@ export default function UpdateForm({ user }: { user: User }) {
 
         } else {
             toast.success('Success')
-            router.refresh()
+            router.replace('/dashboard/users')
 
         }
     }
@@ -68,7 +68,7 @@ export default function UpdateForm({ user }: { user: User }) {
 
         } else {
             toast.success('Success')
-            router.refresh()
+            router.replace('/dashboard/users')
 
         }
     }
@@ -93,7 +93,7 @@ export default function UpdateForm({ user }: { user: User }) {
 
         } else {
             toast.success('Success')
-            router.refresh()
+            router.replace('/dashboard/users')
 
         }
     }
