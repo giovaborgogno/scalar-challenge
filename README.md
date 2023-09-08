@@ -48,7 +48,7 @@ In the original terminal where you started the Backend (CTRL + C to stop it), re
 docker-compose up
 ```
   
-# The app is now running!
+# The app is now running in: http://localhost:3000/
 
 ## Users:
 
