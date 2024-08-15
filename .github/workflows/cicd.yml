@@ -138,7 +138,7 @@ jobs:
 
   deploy:
     needs: build-and-publish-images
-    if: ${{ (github.event_name == 'push' && steps.changes.outputs.services != '[]') || env.FORCE_PIPELINE }}
+    if: ${{ (github.event_name == 'push' && jobs.changes.outputs.services != '[]') || env.FORCE_PIPELINE }}
     strategy:
       max-parallel: 1 # We ensure initial deployment to staging and perform integration testing before beginning deployment to production.
       matrix:
