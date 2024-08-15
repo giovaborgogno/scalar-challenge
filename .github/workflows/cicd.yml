@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 
 env:
+  FORCE_PIPELINE: ${{ github.event_name == 'workflow_dispatch' }}
   # AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
   # RESOURCE_GROUP: "your-resource-group"
   # CLUSTER_NAME: "your-cluster-name"
@@ -35,7 +36,29 @@ env:
   ORIGIN_URL: ${{ vars.ORIGIN_URL }}
 
 jobs:
+  # JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    # Required permissions
+    # permissions:
+    #   pull-requests: read
+    outputs:
+      services: ${{ steps.filter.outputs.changes }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          backend:
+            - 'backend/**'
+          frontend:
+            - 'frontend/**'
+          socket:
+            - 'socket/**'
   unit-tests:
+    needs: changes
+    if: ${{ contains(fromJSON(needs.changes.outputs.services), matrix.service) || env.FORCE_PIPELINE }}
     environment: testing
     runs-on: ubuntu-latest
     strategy:
@@ -92,7 +115,7 @@ jobs:
   build-and-publish-images:
     environment: staging
     needs: unit-tests
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ (github.event_name == 'push' && contains(fromJSON(steps.changes.outputs.services), matrix.service)) || env.FORCE_PIPELINE }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -113,7 +136,7 @@ jobs:
 
   deploy:
     needs: build-and-publish-images
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ (github.event_name == 'push' && steps.changes.outputs.services != '[]') || env.FORCE_PIPELINE }}
     strategy:
       max-parallel: 1 # We ensure initial deployment to staging and perform integration testing before beginning deployment to production.
       matrix:
