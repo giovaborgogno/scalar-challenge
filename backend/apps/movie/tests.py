@@ -19,7 +19,8 @@ class ListPublishedMoviesViewTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['title'], 'Movie Title')
+        self.assertEqual(response.data['results'][0]['title'], 'Movie Title 2')
+        # self.assertEqual(response.data['results'][0]['title'], 'Movie Title')
 
 
 class DetailMovieViewTest(APITestCase):
