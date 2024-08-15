@@ -35,36 +35,13 @@ env:
   ORIGIN_URL: ${{ vars.ORIGIN_URL }}
 
 jobs:
-  # JOB to run change detection
-  changes:
-    runs-on: ubuntu-latest
-    # Required permissions
-    # permissions:
-    #   pull-requests: read
-    outputs:
-      services: ${{ steps.filter.outputs.changes }}
-    steps:
-    - uses: actions/checkout@v4
-    - uses: dorny/paths-filter@v3
-      id: filter
-      with:
-        filters: |
-          backend:
-            - 'backend/**'
-          frontend:
-            - 'frontend/**'
-          socket:
-            - 'socket/**'
-
   unit-tests:
-    needs: changes
-    if: ${{ needs.changes.outputs.services != '[]' || github.event_name == 'workflow_dispatch' }}
     environment: testing
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        service: ${{ (github.event_name == 'workflow_dispatch') && fromJSON('["backend", "frontend", "socket"]') || fromJSON(needs.changes.outputs.services) }}
+        service: [backend, frontend, socket]
     services:
       postgres:
         image: ${{ (matrix.service == 'backend') && 'postgres:latest' || '' }} # We need postgres service only for backend tests. Workaround since github doesn't allow conditions for starting services: https://github.com/actions/runner/issues/822
@@ -115,11 +92,11 @@ jobs:
   build-and-publish-images:
     environment: staging
     needs: unit-tests
-    if: ${{ contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && (needs.changes.outputs.services != '[]' || github.event_name == 'workflow_dispatch') }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: ${{ (github.event_name == 'workflow_dispatch') && fromJSON('["backend", "frontend", "socket"]') || fromJSON(needs.changes.outputs.services) }}
+       service: [backend, frontend, socket]
     steps:
     - uses: actions/checkout@v4
     - name: Build Docker Image
@@ -136,7 +113,7 @@ jobs:
 
   deploy:
     needs: build-and-publish-images
-    if: ${{ contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     strategy:
       max-parallel: 1 # We ensure initial deployment to staging and perform integration testing before beginning deployment to production.
       matrix:
