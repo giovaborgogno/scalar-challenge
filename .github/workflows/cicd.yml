@@ -35,16 +35,37 @@ env:
   ORIGIN_URL: ${{ vars.ORIGIN_URL }}
 
 jobs:
+  # JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    # Required permissions
+    # permissions:
+    #   pull-requests: read
+    outputs:
+      services: ${{ steps.filter.outputs.changes }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        services: |
+          backend:
+            - 'backend/**'
+          frontend:
+            - 'frontend/**'
+          socket:
+            - 'socket/**'
+
   unit-tests:
     environment: testing
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        service: [backend, frontend, socket]
+        service: ${{ (github.event_name == 'workflow_dispatch') && ['backend', 'frontend', 'socket'] || fromJSON(needs.changes.outputs.services) }}
     services:
       postgres:
-        image: ${{ (matrix.service == 'backend') && 'postgres:latest' || '' }} # Workaround since github doesn't allow conditions for starting services: https://github.com/actions/runner/issues/822
+        image: ${{ (matrix.service == 'backend') && 'postgres:latest' || '' }} # We need postgres service only for backend tests. Workaround since github doesn't allow conditions for starting services: https://github.com/actions/runner/issues/822
         env:
           POSTGRES_DB: test
           POSTGRES_USER: test
@@ -88,61 +109,6 @@ jobs:
         npm install
         npm run build --if-present
         npm run test --if-present 
-  # python-unit-tests:
-  #   environment: testing
-  #   runs-on: ubuntu-latest
-  #   services:
-  #     postgres:
-  #       image: postgres:latest
-  #       env:
-  #         POSTGRES_DB: test
-  #         POSTGRES_USER: test
-  #         POSTGRES_PASSWORD: test
-  #       ports:
-  #         - 5432:5432
-  #       options: >-
-  #         --health-cmd="pg_isready"
-  #         --health-interval=10s
-  #         --health-timeout=5s
-  #         --health-retries=5
-  #   steps:
-  #   - uses: actions/checkout@v4
-
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v3
-  #     with:
-  #       python-version: '3.9'
-  #       cache: 'pip'
-  #       cache-dependency-path: backend/requirements.txt
-
-  #   - name: Install Dependencies and Run Backend Tests
-  #     working-directory: ./backend
-  #     run: |
-  #       python -m pip install --upgrade pip
-  #       pip install -r requirements.txt
-  #       python manage.py test apps
-
-  # node-unit-tests:
-  #   environment: testing
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       service: [frontend, socket]
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Set up Node.js
-  #     uses: actions/setup-node@v4
-  #     with:
-  #       node-version: '18'
-  #       cache: 'npm'
-  #       cache-dependency-path: ${{ matrix.service }}/package-lock.json
-  #   - name: Install Dependencies and Run Node Tests
-  #     working-directory: ./${{ matrix.service }}
-  #     run: |
-  #       npm install
-  #       npm run build --if-present
-  #       npm run test --if-present
 
   build-and-publish-images:
     environment: staging
@@ -151,7 +117,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-       service: [backend, frontend, socket]
+        service: [backend, frontend, socket]
+        # service: ${{ (github.event_name == 'workflow_dispatch') && ['backend', 'frontend', 'socket'] || fromJSON(needs.changes.outputs.services) }}
     steps:
     - uses: actions/checkout@v4
     - name: Build Docker Image
@@ -170,7 +137,7 @@ jobs:
     needs: build-and-publish-images
     if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     strategy:
-      max-parallel: 1
+      max-parallel: 1 # We ensure initial deployment to staging and perform integration testing before beginning deployment to production.
       matrix:
         environment: [staging, production]
     environment: ${{ matrix.environment }}
