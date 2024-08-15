@@ -146,7 +146,7 @@ jobs:
 
   build-and-publish-images:
     environment: staging
-    needs: [python-unit-tests, node-unit-tests]
+    needs: unit-tests
     if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     strategy:
