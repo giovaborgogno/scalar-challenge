@@ -10,7 +10,6 @@ on:
   workflow_dispatch:
 
 env:
-  FORCE_PIPELINE: ${{ github.event_name == 'workflow_dispatch' }}
   # AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
   # RESOURCE_GROUP: "your-resource-group"
   # CLUSTER_NAME: "your-cluster-name"
@@ -66,7 +65,7 @@ jobs:
         service: [backend, frontend, socket]
         exclude:
         - service: backend
-    # if: ${{ contains(fromJSON(needs.changes.outputs.services), matrix.service) || env.FORCE_PIPELINE }}
+    # if: ${{ contains(fromJSON(needs.changes.outputs.services), matrix.service) || github.event_name == 'workflow_dispatch' }}
     services:
       postgres:
         image: ${{ (matrix.service == 'backend') && 'postgres:latest' || '' }} # We need postgres service only for backend tests. Workaround since github doesn't allow conditions for starting services: https://github.com/actions/runner/issues/822
@@ -121,7 +120,7 @@ jobs:
     strategy:
       matrix:
        service: [backend, frontend, socket]
-    # if: ${{ (github.event_name == 'push' && contains(fromJSON(steps.changes.outputs.services), matrix.service)) || env.FORCE_PIPELINE }}
+    # if: ${{ (github.event_name == 'push' && contains(fromJSON(steps.changes.outputs.services), matrix.service)) || github.event_name == 'workflow_dispatch' }}
     steps:
     - uses: actions/checkout@v4
     - name: Build Docker Image
@@ -138,7 +137,7 @@ jobs:
 
   deploy:
     needs: [changes, build-and-publish-images]
-    if: ${{ (github.event_name == 'push' && needs.changes.outputs.services != '[]') || env.FORCE_PIPELINE }}
+    if: ${{ (github.event_name == 'push' && needs.changes.outputs.services != '[]') || github.event_name == 'workflow_dispatch' }}
     strategy:
       max-parallel: 1 # We ensure initial deployment to staging and perform integration testing before beginning deployment to production.
       matrix:
