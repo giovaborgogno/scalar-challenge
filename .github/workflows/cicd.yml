@@ -62,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: ${{ (github.event_name == 'workflow_dispatch') && fromJSON('['backend', 'frontend', 'socket']') || fromJSON(needs.changes.outputs.services) }}
+        service: ${{ (github.event_name == 'workflow_dispatch') && fromJSON('["backend", "frontend", "socket"]') || fromJSON(needs.changes.outputs.services) }}
     services:
       postgres:
         image: ${{ (matrix.service == 'backend') && 'postgres:latest' || '' }} # We need postgres service only for backend tests. Workaround since github doesn't allow conditions for starting services: https://github.com/actions/runner/issues/822
