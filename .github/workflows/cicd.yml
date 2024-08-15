@@ -137,8 +137,8 @@ jobs:
       #   docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ matrix.service }}:${{ github.sha }}
 
   deploy:
-    needs: build-and-publish-images
-    if: ${{ (github.event_name == 'push' && jobs.changes.outputs.services != '[]') || env.FORCE_PIPELINE }}
+    needs: [changes, build-and-publish-images]
+    if: ${{ (github.event_name == 'push' && needs.changes.outputs.services != '[]') || env.FORCE_PIPELINE }}
     strategy:
       max-parallel: 1 # We ensure initial deployment to staging and perform integration testing before beginning deployment to production.
       matrix:
