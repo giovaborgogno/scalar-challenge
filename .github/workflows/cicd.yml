@@ -151,5 +151,5 @@ jobs:
       #   kubectl apply -f k8s/qa/
 
     - name: Run Integration Tests in QA
-      if: ${{ matrix.environment == staging }}
+      if: ${{ matrix.environment == 'staging' }}
       run: echo "Integration tests to be added here..."
