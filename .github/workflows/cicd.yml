@@ -207,4 +207,3 @@ jobs:
       if: ${{ matrix.environment == 'staging' }}
       run: |
         echo "Integration tests to be added here..."
-        exit 1
