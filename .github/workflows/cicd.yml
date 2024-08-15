@@ -118,8 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [backend, frontend, socket]
-        # service: ${{ (github.event_name == 'workflow_dispatch') && ['backend', 'frontend', 'socket'] || fromJSON(needs.changes.outputs.services) }}
+        service: ${{ (github.event_name == 'workflow_dispatch') && fromJSON('["backend", "frontend", "socket"]') || fromJSON(needs.changes.outputs.services) }}
     steps:
     - uses: actions/checkout@v4
     - name: Build Docker Image
