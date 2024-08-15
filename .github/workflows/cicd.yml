@@ -121,7 +121,7 @@ jobs:
     strategy:
       matrix:
        service: [backend, frontend, socket]
-    if: ${{ (github.event_name == 'push' && contains(fromJSON(steps.changes.outputs.services), matrix.service)) || env.FORCE_PIPELINE }}
+    # if: ${{ (github.event_name == 'push' && contains(fromJSON(steps.changes.outputs.services), matrix.service)) || env.FORCE_PIPELINE }}
     steps:
     - uses: actions/checkout@v4
     - name: Build Docker Image
