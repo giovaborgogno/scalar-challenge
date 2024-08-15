@@ -58,6 +58,7 @@ jobs:
 
   unit-tests:
     needs: changes
+    if: ${{ needs.changes.outputs.services != '[]' || github.event_name == 'workflow_dispatch' }}
     environment: testing
     runs-on: ubuntu-latest
     strategy:
@@ -114,7 +115,7 @@ jobs:
   build-and-publish-images:
     environment: staging
     needs: unit-tests
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && (needs.changes.outputs.services != '[]' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -135,7 +136,7 @@ jobs:
 
   deploy:
     needs: build-and-publish-images
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) }}
     strategy:
       max-parallel: 1 # We ensure initial deployment to staging and perform integration testing before beginning deployment to production.
       matrix:
