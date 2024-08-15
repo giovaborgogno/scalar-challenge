@@ -115,11 +115,6 @@ DATABASES = {
     'default': env.db("DATABASE_URL", default="postgres://dimode"),
 }
 
-DATABASES['test'] = {
-    'ENGINE': 'django.db.backends.sqlite3',  # Puedes usar SQLite para las pruebas
-    'NAME': ':memory:',  # SQLite en memoria para pruebas rápidas
-}
-
 DATABASES["default"]["ATOMIC_REQUEST"] = True
 
 CORS_ORIGIN_WHITELIST = [
