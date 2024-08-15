@@ -57,6 +57,7 @@ jobs:
             - 'socket/**'
 
   unit-tests:
+    needs: changes
     environment: testing
     runs-on: ubuntu-latest
     strategy:
