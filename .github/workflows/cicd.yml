@@ -72,7 +72,8 @@ jobs:
       run: |
         python manage.py test apps
 
-    - name: Set up Node.js
+    - name: Set up Node.js for Frontend
+      working-directory: ./frontend
       uses: actions/setup-node@v4
       with:
         node-version: '18'
@@ -90,6 +91,13 @@ jobs:
         echo "Run Frontend Tests"
         npm run test --if-present
 
+    - name: Set up Node.js for Socket
+      working-directory: ./socket
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
     - name: Install Socket Dependencies
       working-directory: ./socket
       run: |
