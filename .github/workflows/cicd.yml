@@ -63,9 +63,12 @@ jobs:
       fail-fast: false
       matrix:
         service: [backend, frontend, socket]
+    env:
+      RUN_PYTHON_TESTS: ${{ matrix.service == 'backend' && (contains(fromJSON(needs.changes.outputs.services), matrix.service) || github.event_name == 'workflow_dispatch') }}
+      RUN_NODE_TESTS: ${{ matrix.service != 'backend' && (contains(fromJSON(needs.changes.outputs.services), matrix.service) || github.event_name == 'workflow_dispatch') }}
     services:
       postgres:
-        image: ${{ (matrix.service == 'backend') && 'postgres:latest' || '' }} # We need postgres service only for backend tests. Workaround since github doesn't allow conditions for starting services: https://github.com/actions/runner/issues/822
+        image: ${{ env.RUN_PYTHON_TESTS && 'postgres:latest' || '' }} # We need postgres service only for backend tests. Workaround since github doesn't allow conditions for starting services: https://github.com/actions/runner/issues/822
         env:
           POSTGRES_DB: test
           POSTGRES_USER: test
@@ -81,14 +84,14 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python
-      if: ${{ matrix.service == 'backend' && (contains(fromJSON(needs.changes.outputs.services), matrix.service) || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.RUN_PYTHON_TESTS }}
       uses: actions/setup-python@v3
       with:
         python-version: '3.9'
         cache: 'pip'
         cache-dependency-path: backend/requirements.txt
     - name: Install Dependencies and Run Python Tests
-      if: ${{ matrix.service == 'backend' && (contains(fromJSON(needs.changes.outputs.services), matrix.service) || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.RUN_PYTHON_TESTS }}
       working-directory: ./backend
       run: |
         python -m pip install --upgrade pip
@@ -96,14 +99,14 @@ jobs:
         python manage.py test apps
 
     - name: Set up Node.js
-      if: ${{ matrix.service != 'backend' && (contains(fromJSON(needs.changes.outputs.services), matrix.service) || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.RUN_NODE_TESTS }}
       uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
         cache-dependency-path: ${{ matrix.service }}/package-lock.json
     - name: Install Dependencies and Run Node Tests
-      if: ${{ matrix.service != 'backend' && (contains(fromJSON(needs.changes.outputs.services), matrix.service) || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.RUN_NODE_TESTS }}
       working-directory: ./${{ matrix.service }}
       run: |
         npm install
