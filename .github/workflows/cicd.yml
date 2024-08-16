@@ -113,6 +113,7 @@ jobs:
   build-and-publish-images:
     environment: staging
     needs: [changes, unit-tests]
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
