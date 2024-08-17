@@ -7,6 +7,7 @@ export async function GET(request: Request) {
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/auth/users/`, {
       method: 'GET',
+      cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `JWT ${auth}`,
@@ -15,12 +16,12 @@ export async function GET(request: Request) {
     const data = await res.json();
 
     if (!res.ok) {
-      
-      return NextResponse.json({error: data ?? 'Server responded with an error'}, {status: res.status});
+
+      return NextResponse.json({ error: data ?? 'Server responded with an error' }, { status: res.status });
     }
 
-    
-    return NextResponse.json(data, {status: 200});
+
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'There was an error with the network request' });
   }

@@ -19,57 +19,58 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials, req) {
         try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/auth/jwt/create`, {
-          method: 'POST',
-          body: JSON.stringify({
-            email: credentials?.email,
-            password: credentials?.password,
-          }),
-          headers: { 'Content-Type': 'application/json' },
-        });
+          const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/auth/jwt/create`, {
+            method: 'POST',
+            body: JSON.stringify({
+              email: credentials?.email,
+              password: credentials?.password,
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          });
 
-        if (!res.ok) {
-          const data = await res.json();
-          NextResponse.json({ error: data ?? 'Server responded with an error' }, { status: res.status });
+          if (!res.ok) {
+            const data = await res.json();
+            NextResponse.json({ error: data ?? 'Server responded with an error' }, { status: res.status });
+            return null
+          }
+
+          const { access, refresh } = await res.json();
+
+          const userRes = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/auth/users/me/`, {
+            cache: 'no-store',
+            headers: { Authorization: `JWT ${access}` },
+          });
+
+          if (!userRes.ok) {
+            const data = await res.json();
+            NextResponse.json({ error: data ?? 'Server responded with an error' }, { status: res.status });
+            return null
+          }
+
+          const userData = await userRes.json();
+
+          const user = {
+            id: userData.id,
+            photo: userData.get_photo,
+            email: userData.email,
+            firstName: userData.first_name,
+            lastName: userData.last_name,
+            fullName: userData.get_full_name,
+            role: userData.role,
+            accessToken: access,
+            refreshToken: refresh,
+          };
+
+          if (user) {
+            return user;
+          } else {
+            return null;
+          }
+        } catch (error) {
+          // Hubo un error con la solicitud de red
+          NextResponse.json({ error: 'There was an error with the network request' });
           return null
         }
-
-        const { access, refresh } = await res.json();
-
-        const userRes = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/auth/users/me/`, {
-          headers: { Authorization: `JWT ${access}` },
-        });
-
-        if (!userRes.ok) {
-          const data = await res.json();
-          NextResponse.json({ error: data ?? 'Server responded with an error' }, { status: res.status });
-          return null
-        }
-
-        const userData = await userRes.json();
-
-        const user = {
-          id: userData.id,
-          photo: userData.get_photo,
-          email: userData.email,
-          firstName: userData.first_name,
-          lastName: userData.last_name,
-          fullName: userData.get_full_name,
-          role: userData.role,
-          accessToken: access,
-          refreshToken: refresh,
-        };
-
-        if (user) {
-          return user;
-        } else {
-          return null;
-        }
-      } catch (error) {
-        // Hubo un error con la solicitud de red
-        NextResponse.json({ error: 'There was an error with the network request' });
-        return null
-      }
       },
     }),
   ],
