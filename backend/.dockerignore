@@ -5,6 +5,7 @@ node_modules
 /.next/
 /.next
 /node_modules
-.env
 **/__pycache__
 /static_files
+.env
+core/.env
