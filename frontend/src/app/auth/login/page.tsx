@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, Suspense } from "react";
 import facebookSvg from "@/images/Facebook.svg";
 import twitterSvg from "@/images/Twitter.svg";
 import googleSvg from "@/images/Google.svg";
@@ -48,7 +48,9 @@ const PageLogin = async () => {
             </label>
             <ButtonPrimary type="submit">Continue</ButtonPrimary>
           </form> */}
-          <LoginForm />
+          <Suspense>
+            <LoginForm />
+          </Suspense>
 
           {/* ==== */}
           <span className="block text-center text-neutral-700 dark:text-neutral-300">

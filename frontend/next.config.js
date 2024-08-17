@@ -1,26 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-    typedRoutes: true,
-    serverActions: true,
-  },
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.pexels.com",
-        port: "",
-        pathname: "/**",
+        hostname: "**",
       },
       {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        port: "",
-        pathname: "/**",
+        protocol: "http",
+        hostname: "**",
       },
     ],
-    domains: ['localhost',process.env.NEXT_PUBLIC_APP_API_URL, process.env.NEXT_PUBLIC_APP_DOMAIN, 'backend'],
   },
 };
 
