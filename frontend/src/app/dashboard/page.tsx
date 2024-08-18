@@ -14,12 +14,12 @@ interface Props {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-async function getData({searchParams}:Props) {
+async function getData({ searchParams }: Props) {
 
   const session = await getServerSession(authOptions)
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/movie/${session?.user?.role == 'admin' ? 'private-list' : 'list'}?p=${searchParams?.p?? '1'}`,
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/movie/${session?.user?.role == 'admin' ? 'private-list' : 'list'}?p=${searchParams?.p ?? '1'}`,
     {
       method: 'GET',
       cache: 'no-store',
@@ -38,9 +38,9 @@ async function getData({searchParams}:Props) {
 
 }
 
-const AccountOrder = async ({searchParams}:Props) => {
+const AccountOrder = async ({ searchParams }: Props) => {
 
-  const data = await getData({searchParams})
+  const data = await getData({ searchParams })
   const movies = data.results
   const next_url = data.next
   const prev_url = data.previous
@@ -61,7 +61,7 @@ const AccountOrder = async ({searchParams}:Props) => {
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   <span>{genre}</span>
                   <span className="mx-2 border-l border-slate-200 dark:border-slate-700 h-4"></span>
-                  <span className="mt-0.5 flex text-yellow-500 gap-1"><StarIcon className="w-4 h-4" /> {rating?? 'No reviews'} </span>
+                  <span className="mt-0.5 flex text-yellow-500 gap-1"><StarIcon className="w-4 h-4" /> {rating ?? 'No reviews'} </span>
                 </p>
               </div>
               {/* <Prices className="mt-0.5 ml-2" /> */}
@@ -69,7 +69,7 @@ const AccountOrder = async ({searchParams}:Props) => {
             </div>
           </div>
           <div className="flex flex-1 items-end justify-between text-sm">
-            
+
 
             <Link href={`/movie/${slug}#reviews`} className="flex">
               <button
@@ -100,7 +100,7 @@ const AccountOrder = async ({searchParams}:Props) => {
       {/* HEADING */}
       <h2 className="text-2xl sm:text-3xl font-semibold">Movies</h2>
       {renderMovies()}
-      <NextPrevPage next_url={next_url} prev_url={prev_url}/>
+      <NextPrevPage next_url={next_url} prev_url={prev_url} />
     </div>
   );
 };

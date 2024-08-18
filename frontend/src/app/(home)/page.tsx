@@ -25,19 +25,19 @@ async function getData() {
         'Content-Type': 'application/json',
       },
     },
-    );
-    // The return value is *not* serialized
-    // You can return Date, Map, Set, etc.
-    
-    if (!res.ok) {
+  );
+  // The return value is *not* serialized
+  // You can return Date, Map, Set, etc.
+
+  if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
     throw new Error('Failed to fetch data')
   }
   return res.json()
-  
+
 }
 
-async function getPaginationData({searchParams}:Props) {
+async function getPaginationData({ searchParams }: Props) {
 
   const session = await getServerSession(authOptions)
 
@@ -50,24 +50,24 @@ async function getPaginationData({searchParams}:Props) {
         'Content-Type': 'application/json',
       },
     },
-    );
-    // The return value is *not* serialized
-    // You can return Date, Map, Set, etc.
-    
-    if (!res.ok) {
+  );
+  // The return value is *not* serialized
+  // You can return Date, Map, Set, etc.
+
+  if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
     throw new Error('Failed to fetch data')
   }
   return res.json()
-  
+
 }
 
-const HomePage = async ({searchParams}:Props) => {
+const HomePage = async ({ searchParams }: Props) => {
 
   const data = await getData();
   const posts = data.results;
-  
-  const paginationData = await getPaginationData({searchParams});
+
+  const paginationData = await getPaginationData({ searchParams });
   const count = paginationData.count;
   const paginationPosts = paginationData.results;
 
@@ -79,7 +79,7 @@ const HomePage = async ({searchParams}:Props) => {
       <div className="container relative">
         {/* === SECTION 1 === */}
         <div className="pt-12 pb-16 lg:pb-28">
-          <SectionMagazine5 posts={posts}/>
+          <SectionMagazine5 posts={posts} />
         </div>
 
         {/* === SECTION 1 === */}

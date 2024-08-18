@@ -5,5 +5,3 @@ node_modules
 /.next/
 /.next
 /node_modules
-.env
-.env.local

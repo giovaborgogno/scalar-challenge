@@ -29,7 +29,6 @@ env:
   NEXT_PUBLIC_APP_SOCKET_URL: ${{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
   NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
-  NEXT_PUBLIC_APP_DOMAIN: ${{ vars.NEXT_PUBLIC_APP_DOMAIN }}
   # Socket variables
   SOCKET_DEBUG: ${{ false }}
   ORIGIN_URL: ${{ vars.ORIGIN_URL }}
@@ -61,7 +60,7 @@ jobs:
 
     - name: Set up Python
       if: ${{ matrix.service == 'backend' }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: '3.9'
         cache: 'pip'

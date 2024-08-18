@@ -1,4 +1,4 @@
-require("dotenv").config();
+if (process.env.NODE_ENV != 'production') require("dotenv").config();
 const roomRoutes = require("./routes/roomRoutes");
 const { app, server } = require("./routes/socket");
 const debugPrint = require("./utils/debugPrint");

@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 const intialData: IRoomContext = {
   rooms: [],
   myRooms: [],
-  setMyRooms: () => {},
+  setMyRooms: () => { },
 };
 
 const RoomContext = createContext<IRoomContext>(intialData);
@@ -33,7 +33,7 @@ export default function RoomProvider({
   }, [myRooms]);
 
   async function fetchRoomsfromServer(): Promise<void> {
-    const response = await fetch(process.env.NEXT_PUBLIC_APP_SOCKET_URL + "/rooms");
+    const response = await fetch(process.env.NEXT_PUBLIC_APP_SOCKET_URL + "/rooms", { cache: 'no-store' });
     const rooms = await response.json();
     setRooms(rooms);
 

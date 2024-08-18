@@ -187,9 +187,9 @@ const BlogSingle = async ({ params }: Props) => {
             Critics&apos;s Reviews:
           </h3>
           <ul className="nc-SingleCommentLists space-y-5">
-            {reviews?.map((review: any, key:number) => (
+            {reviews?.map((review: any, key: number) => (
               <li key={key}>
-                <Comment review={review} key={key}/>
+                <Comment review={review} key={key} />
               </li>
             ))}
 
@@ -200,9 +200,9 @@ const BlogSingle = async ({ params }: Props) => {
             Audience&apos;s Reviews:
           </h3>
           <ul className="nc-SingleCommentLists space-y-5">
-            {usersReviews?.map((review: any, key:number) => (
+            {usersReviews?.map((review: any, key: number) => (
               <li key={key}>
-                <Comment review={review} key={key}/>
+                <Comment review={review} key={key} />
               </li>
             ))}
 
