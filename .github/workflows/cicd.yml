@@ -10,9 +10,10 @@ on:
   workflow_dispatch:
 
 env:
-  # AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
-  # RESOURCE_GROUP: "your-resource-group"
-  # CLUSTER_NAME: "your-cluster-name"
+  # ACR variables
+  ACR_NAME: ${{ vars.ACR_NAME }}
+  ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+  ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
   # Backend variables
   DEBUG: 'False'
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -35,7 +36,6 @@ env:
 
 jobs:
   unit-tests:
-    environment: testing
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -89,7 +89,6 @@ jobs:
         npm run test --if-present 
 
   build-and-publish-images:
-    environment: staging
     needs: unit-tests
     if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
@@ -98,17 +97,19 @@ jobs:
        service: [backend, frontend, socket]
     steps:
     - uses: actions/checkout@v4
-    - name: Build Docker Image
+    - name: Docker Login
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ env.ACR_NAME }}.azurecr.io
+          username: ${{ env.ACR_USERNAME }}
+          password: ${{ env.ACR_PASSWORD }}
+    - name: Build and Push to ACR
       working-directory: ./${{ matrix.service }}
-      run:  echo "Build ${{ matrix.service }} Docker Image"
-      # run: |
-      #   docker build -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ matrix.service }}:${{ github.sha }}
-    - name: Push Image to ACR
-      working-directory: ./${{ matrix.service }}
-      run:  echo "Push ${{ matrix.service }} Image to ACR"
-      # run: |
-      #   echo ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }} | docker login ${{ env.AZURE_CONTAINER_REGISTRY }} --username ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }} --password-stdin
-      #   docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ matrix.service }}:${{ github.sha }}
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: ${{ env.ACR_NAME }}.azurecr.io/${{ matrix.service }}:${{ github.sha }}
+        file: Dockerfile
 
   deploy:
     needs: build-and-publish-images
