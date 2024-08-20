@@ -108,7 +108,7 @@ jobs:
       with:
         push: true
         tags: ${{ env.ACR_NAME }}.azurecr.io/${{ matrix.service }}:${{ github.sha }}
-        file: ${{ matrix.service }}/Dockerfile
+        context: ${{ matrix.service }}
 
   deploy:
     needs: build-and-publish-images
