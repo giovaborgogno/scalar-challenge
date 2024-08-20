@@ -98,11 +98,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Docker Login
-        uses: azure/docker-login@v2
-        with:
-          login-server: ${{ env.ACR_NAME }}.azurecr.io
-          username: ${{ env.ACR_USERNAME }}
-          password: ${{ env.ACR_PASSWORD }}
+      uses: azure/docker-login@v2
+      with:
+        login-server: ${{ env.ACR_NAME }}.azurecr.io
+        username: ${{ env.ACR_USERNAME }}
+        password: ${{ env.ACR_PASSWORD }}
     - name: Build and Push to ACR
       working-directory: ./${{ matrix.service }}
       uses: docker/build-push-action@v2
