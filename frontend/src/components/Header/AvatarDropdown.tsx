@@ -7,8 +7,14 @@ import Avatar from "@/shared/Avatar/Avatar";
 import SwitchDarkMode2 from "@/shared/SwitchDarkMode/SwitchDarkMode2";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+import { getApiUrl } from "./actions";
 
 export default function AvatarDropdown() {
+  const [apiUrl, setApiUrl] = useState<string>()
+  useEffect(() => {
+    const loadApiUrl = async () => setApiUrl(await getApiUrl())
+    loadApiUrl()
+  }, [])
 
   const { data: session } = useSession()
 
@@ -56,7 +62,7 @@ export default function AvatarDropdown() {
                   <div className="relative grid grid-cols-1 gap-6 bg-white dark:bg-neutral-800 py-7 px-6">
                     {session ?
                       <div className="flex items-center space-x-3">
-                        <Avatar imgUrl={session?.user?.photo ? `${process.env.NEXT_PUBLIC_APP_API_URL}${session?.user.photo}` : avatarImgs[10]} sizeClass="w-12 h-12" />
+                        <Avatar imgUrl={session?.user?.photo ? `${apiUrl}${session?.user.photo}` : avatarImgs[10]} sizeClass="w-12 h-12" />
 
                         <div className="flex-grow">
                           <h4 className="font-semibold">{session?.user?.firstName} {session?.user?.lastName}</h4>

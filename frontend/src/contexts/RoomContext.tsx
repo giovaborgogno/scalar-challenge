@@ -2,6 +2,7 @@
 import IRoom from "@/interfaces/IRoom";
 import IRoomContext from "@/interfaces/IRoomContext";
 import { createContext, useContext, useEffect, useState } from "react";
+import { getSocketUrl } from "./actions";
 
 const intialData: IRoomContext = {
   rooms: [],
@@ -33,7 +34,8 @@ export default function RoomProvider({
   }, [myRooms]);
 
   async function fetchRoomsfromServer(): Promise<void> {
-    const response = await fetch(process.env.NEXT_PUBLIC_APP_SOCKET_URL + "/rooms", { cache: 'no-store' });
+    const url = await getSocketUrl()
+    const response = await fetch(url + "/rooms", { cache: 'no-store' });
     const rooms = await response.json();
     setRooms(rooms);
 
