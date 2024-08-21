@@ -167,7 +167,7 @@ jobs:
         location: ${{ env.LOCATION }}
         targetPort: 4000
         environmentVariables: |
-          "DEBUG=$SOCKET_DEBUG" "ORIGIN_URL=$ORIGIN_URL" "MONGO_CONNECTION_STRING=$MONGO_CONNECTION_STRING" "MONGO_DB_NAME=$MONGO_DB_NAME"
+          "DEBUG=$SOCKET_DEBUG" "ORIGIN_URL=$ORIGIN_URL" 'MONGO_CONNECTION_STRING="$MONGO_CONNECTION_STRING"' "MONGO_DB_NAME=$MONGO_DB_NAME"
 
     - name: Deploy Frontend Container App
       uses: azure/container-apps-deploy-action@v1
