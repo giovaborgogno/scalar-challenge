@@ -142,6 +142,7 @@ jobs:
     - name: Deploy Backend Container App
       uses: azure/container-apps-deploy-action@v1
       with:
+        containerAppName: backend
         imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/backend:${{ github.sha }} 
         acrName: ${{ env.ACR_NAME}}
         acrUsername: ${{ env.ACR_USERNAME }}
@@ -156,6 +157,7 @@ jobs:
     - name: Deploy Socket Container App
       uses: azure/container-apps-deploy-action@v1
       with:
+        containerAppName: socket
         imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/socket:${{ github.sha }} 
         acrName: ${{ env.ACR_NAME}}
         acrUsername: ${{ env.ACR_USERNAME }}
@@ -170,7 +172,8 @@ jobs:
     - name: Deploy Frontend Container App
       uses: azure/container-apps-deploy-action@v1
       with:
-        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/socket:${{ github.sha }} 
+        containerAppName: frontend
+        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/frontend:${{ github.sha }} 
         acrName: ${{ env.ACR_NAME}}
         acrUsername: ${{ env.ACR_USERNAME }}
         acrPassword: ${{ env.ACR_PASSWORD }}
