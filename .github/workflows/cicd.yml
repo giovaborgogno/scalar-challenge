@@ -10,10 +10,15 @@ on:
   workflow_dispatch:
 
 env:
-  # ACR variables
+  # Azure variables
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
   ACR_NAME: ${{ vars.ACR_NAME }}
   ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
   ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+  LOCATION: ${{ vars.LOCATION }}
   # Backend variables
   DEBUG: 'False'
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -33,6 +38,8 @@ env:
   # Socket variables
   SOCKET_DEBUG: ${{ false }}
   ORIGIN_URL: ${{ vars.ORIGIN_URL }}
+  MONGO_CONNECTION_STRING: ${{ secrets.MONGO_CONNECTION_STRING }}
+  MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
 
 jobs:
   unit-tests:
@@ -122,30 +129,54 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # - name: Azure login
-    #   uses: azure/login@v1.4.6
-    #   with:
-    #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-    #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-    #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Azure CLI Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ env.AZURE_CLIENT_ID }}
+        tenant-id: ${{ env.AZURE_TENANT_ID }}
+        subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-    # - name: Set up kubelogin for non-interactive login
-    #   uses: azure/use-kubelogin@v1
-    #   with:
-    #     kubelogin-version: 'v0.0.25'
+    - name: Deploy Backend Container App
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/backend:${{ github.sha }} 
+        acrName: ${{ env.ACR_NAME}}
+        acrUsername: ${{ env.ACR_USERNAME }}
+        acrPassword: ${{ env.ACR_PASSWORD }}
+        resourceGroup: ${{ env.RESOURCE_GROUP }}
+        containerAppEnvironment: scalarchallenge-${{ matrix.environment }}
+        location: ${{ env.LOCATION }}
+        targetPort: 8000
+        environmentVariables: |
+          "DEBUG=$DEBUG" "SECRET_KEY=$SECRET_KEY" "DATABASE_URL=$DATABASE_URL" "DOMAIN=$DOMAIN" "EMAIL_HOST=$EMAIL_HOST" "EMAIL_HOST_USER=$EMAIL_HOST_USER" "EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD" "EMAIL_PORT=$EMAIL_PORT" "EMAIL_USE_SSL=$EMAIL_USE_SSL" 
 
-    # - name: Get K8s context
-    #   uses: azure/aks-set-context@v3
-    #   with:
-    #     resource-group: ${{ env.RESOURCE_GROUP }}
-    #     cluster-name: ${{ env.CLUSTER_NAME }}
-    #     admin: 'false'
-    #     use-kubelogin: 'true'
+    - name: Deploy Socket Container App
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/socket:${{ github.sha }} 
+        acrName: ${{ env.ACR_NAME}}
+        acrUsername: ${{ env.ACR_USERNAME }}
+        acrPassword: ${{ env.ACR_PASSWORD }}
+        resourceGroup: ${{ env.RESOURCE_GROUP }}
+        containerAppEnvironment: scalarchallenge-${{ matrix.environment }}
+        location: ${{ env.LOCATION }}
+        targetPort: 4000
+        environmentVariables: |
+          "DEBUG=$SOCKET_DEBUG" "ORIGIN_URL=$ORIGIN_URL" "MONGO_CONNECTION_STRING=$MONGO_CONNECTION_STRING" "MONGO_DB_NAME=$MONGO_DB_NAME"
 
-    - name: Deploy
-      run:  echo "Deploy to ${{ matrix.environment }} environment"
-      # run: |
-      #   kubectl apply -f k8s/qa/
+    - name: Deploy Frontend Container App
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/socket:${{ github.sha }} 
+        acrName: ${{ env.ACR_NAME}}
+        acrUsername: ${{ env.ACR_USERNAME }}
+        acrPassword: ${{ env.ACR_PASSWORD }}
+        resourceGroup: ${{ env.RESOURCE_GROUP }}
+        containerAppEnvironment: scalarchallenge-${{ matrix.environment }}
+        location: ${{ env.LOCATION }}
+        targetPort: 3000
+        environmentVariables: |
+          "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" "NEXT_PUBLIC_APP_API_URL=$NEXT_PUBLIC_APP_API_URL" "NEXT_PUBLIC_APP_SOCKET_URL=$NEXT_PUBLIC_APP_SOCKET_URL" "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" "NEXTAUTH_URL=$NEXTAUTH_URL" 
 
     - name: Run Integration Tests in QA
       if: ${{ matrix.environment == 'staging' }}
