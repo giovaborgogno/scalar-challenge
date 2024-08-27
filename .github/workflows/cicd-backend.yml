@@ -1,0 +1,128 @@
+name: CI/CD Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+env:
+  # Azure variables
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+  ACR_NAME: ${{ vars.ACR_NAME }}
+  ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+  ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+  LOCATION: ${{ vars.LOCATION }}
+  # Backend variables
+  DEBUG: 'False'
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  DOMAIN: ${{ vars.DOMAIN }}
+  EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }} 
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+  EMAIL_USE_SSL: ${{ secrets.EMAIL_USE_SSL }}
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+        cache: 'pip'
+        cache-dependency-path: backend/requirements.txt
+    - name: Install Dependencies and Run Python Tests
+      working-directory: ./backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        python manage.py test apps
+
+  build-and-publish-images:
+    needs: unit-tests
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Docker Login
+      uses: azure/docker-login@v2
+      with:
+        login-server: ${{ env.ACR_NAME }}.azurecr.io
+        username: ${{ env.ACR_USERNAME }}
+        password: ${{ env.ACR_PASSWORD }}
+    - name: Build and Push to ACR
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: ${{ env.ACR_NAME }}.azurecr.io/backend:${{ github.sha }}
+        context: backend
+
+  deploy:
+    needs: build-and-publish-images
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+      max-parallel: 1 # We ensure initial deployment to staging and perform integration testing before beginning deployment to production.
+      matrix:
+        environment: [staging, production]
+    environment: ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Azure CLI Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ env.AZURE_CLIENT_ID }}
+        tenant-id: ${{ env.AZURE_TENANT_ID }}
+        subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Deploy Backend Container App
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        containerAppName: backend
+        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/backend:${{ github.sha }} 
+        acrName: ${{ env.ACR_NAME}}
+        acrUsername: ${{ env.ACR_USERNAME }}
+        acrPassword: ${{ env.ACR_PASSWORD }}
+        resourceGroup: ${{ env.RESOURCE_GROUP }}
+        containerAppEnvironment: scalarchallenge-${{ matrix.environment }}
+        location: ${{ env.LOCATION }}
+        targetPort: 8000
+        environmentVariables: |
+          "DEBUG=$DEBUG" 'SECRET_KEY="$SECRET_KEY"' "DATABASE_URL=$DATABASE_URL" "DOMAIN=$DOMAIN" "EMAIL_HOST=$EMAIL_HOST" "EMAIL_HOST_USER=$EMAIL_HOST_USER" "EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD" "EMAIL_PORT=$EMAIL_PORT" "EMAIL_USE_SSL=$EMAIL_USE_SSL" 
+
+    - name: Run Integration Tests in QA
+      if: ${{ matrix.environment == 'staging' }}
+      run: |
+        echo "Integration tests to be added here..."
