@@ -8,21 +8,19 @@ on:
 
 jobs:
   test1:
-    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
     - name: Test 1
+      if: ${{ false }}
       run: echo Test1
 
   test2:
-    if: ${{ true }}
     runs-on: ubuntu-latest
     steps:
     - name: Test 2
       run: echo Test2
 
   test3:
-    if: ${{ true }}
     runs-on: ubuntu-latest
     steps:
     - name: Test 3
