@@ -1,0 +1,33 @@
+name: Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test1:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Test 1
+      run: echo Test1
+
+  test2:
+    if: ${{ true }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Test 2
+      run: echo Test2
+
+  test3:
+    if: ${{ true }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Test 3
+      run: echo Test3
+
+  second-job:
+    needs: [test1, test2, test3]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Testing...
+      run: echo Success
