@@ -8,13 +8,6 @@ on:
       - 'backend/**'
       - 'socket/**'
       - 'frontend/**'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'backend/**'
-      - 'socket/**'
-      - 'frontend/**'
   workflow_dispatch:
 
 env:
