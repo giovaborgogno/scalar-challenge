@@ -16,6 +16,29 @@ on:
         required: true
         type: string
 
+env:
+  # Backend variables
+  DEBUG: 'False'
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  DOMAIN: ${{ vars.DOMAIN }}
+  EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }} 
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+  EMAIL_USE_SSL: ${{ secrets.EMAIL_USE_SSL }}
+  # Frontend variables
+  NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
+  NEXT_PUBLIC_APP_API_URL: ${{ vars.NEXT_PUBLIC_APP_API_URL }}
+  NEXT_PUBLIC_APP_SOCKET_URL: ${{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+  NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
+  # Socket variables
+  SOCKET_DEBUG: ${{ false }}
+  ORIGIN_URL: ${{ vars.ORIGIN_URL }}
+  MONGO_CONNECTION_STRING: ${{ secrets.MONGO_CONNECTION_STRING }}
+  MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+
 jobs:
   deploy:
     environment: ${{ inputs.environment }}
