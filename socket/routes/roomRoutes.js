@@ -4,7 +4,7 @@ const router = express.Router();
 
 const ROOMS = [
   {
-    title: "Last Premiere's Chat v2",
+    title: "Last Premiere's Chat v3",
     id: "1",
   },
 
