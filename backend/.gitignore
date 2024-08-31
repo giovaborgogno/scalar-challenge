@@ -51,4 +51,8 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 
+
 /static_files
+
+/static_files
+
