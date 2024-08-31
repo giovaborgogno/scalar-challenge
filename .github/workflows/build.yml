@@ -1,0 +1,26 @@
+name: Build and Push to ACR
+
+on:
+  workflow_call:
+    inputs:
+      service:
+        required: true
+        type: string
+
+jobs:
+  build-and-publish-images:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Docker Login
+      uses: azure/docker-login@v2
+      with:
+        login-server: ${{ secrets.ACR_NAME }}.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+    - name: Build and Push to ACR
+      uses: docker/build-push-action@v6
+      with:
+        push: true
+        tags: ${{ secrets.ACR_NAME }}.azurecr.io/${{ inputs.service }}:${{ github.sha }}
+        context: ${{ inputs.service }}
