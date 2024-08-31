@@ -1,7 +1,6 @@
 name: Socket Unit Tests
 
 on:
-  push: # for test
   pull_request:
     paths:
       - 'socket/**'
