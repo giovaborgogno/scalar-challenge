@@ -27,8 +27,7 @@ class ListPublishedMoviesViewTest(APISimpleTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['title'], 'fail')
-        # self.assertEqual(response.data['results'][0]['title'], 'Sound of Freedom')
+        self.assertEqual(response.data['results'][0]['title'], 'Sound of Freedom')
 
 
 class DetailMovieViewTest(APISimpleTestCase):
