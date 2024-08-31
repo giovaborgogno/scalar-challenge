@@ -1,36 +1,13 @@
 name: CI/CD Pipeline - Test
 
 on:
-  push:
+  [push, pull_request]:
     # branches:
     #   - main
     paths:
       - 'backend/**'
       - 'socket/**'
       - 'frontend/**'
-
-env:
-  # Backend variables
-  DEBUG: 'False'
-  SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  DOMAIN: ${{ vars.DOMAIN }}
-  EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }} 
-  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
-  EMAIL_USE_SSL: ${{ secrets.EMAIL_USE_SSL }}
-  # Frontend variables
-  NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
-  NEXT_PUBLIC_APP_API_URL: ${{ vars.NEXT_PUBLIC_APP_API_URL }}
-  NEXT_PUBLIC_APP_SOCKET_URL: ${{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}
-  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-  NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
-  # Socket variables
-  SOCKET_DEBUG: ${{ false }}
-  ORIGIN_URL: ${{ vars.ORIGIN_URL }}
-  MONGO_CONNECTION_STRING: ${{ secrets.MONGO_CONNECTION_STRING }}
-  MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
 
 jobs:
   changes:
@@ -57,41 +34,14 @@ jobs:
       fail-fast: false
       matrix:
         service: ${{ fromJSON(needs.changes.outputs.services) }}
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      if: ${{ matrix.service == 'backend' }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-        cache: 'pip'
-        cache-dependency-path: backend/requirements.txt
-    - name: Install Dependencies and Run Python Tests
-      if: ${{ matrix.service == 'backend' }}
-      working-directory: ./backend
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        python manage.py test apps
-
-    - name: Set up Node.js
-      if: ${{ matrix.service != 'backend' }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: ${{ matrix.service }}/package-lock.json
-    - name: Install Dependencies and Run Node Tests
-      if: ${{ matrix.service != 'backend' }}
-      working-directory: ./${{ matrix.service }}
-      run: |
-        npm install
-        npm run build --if-present
-        npm run test --if-present
+    uses: ./.github/workflows/unit-tests.yml 
+    with:
+      service: ${{ matrix.service }} 
+    secrets: inherit
 
   build-and-publish-images:
     needs: [changes, unit-tests]
+    if: ${{ github.event_name == 'push' }} # if the trigger was a pull request just runs the unit tests
     strategy:
       matrix:
         service: ${{ fromJSON(needs.changes.outputs.services) }}
