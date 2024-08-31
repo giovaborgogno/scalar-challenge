@@ -70,7 +70,6 @@ class PostReviewView(StandardAPIView):
                 user=user,
                 movie=movie
             )
-            
             if user.role == 'critic':
                 users = UserAccount.objects.filter(role='critic')
                 avg_rating = Review.objects.filter(movie=movie, user__in=users).aggregate(Avg('rating'))              
@@ -81,12 +80,9 @@ class PostReviewView(StandardAPIView):
                 avg_rating = Review.objects.filter(movie=movie, user__in=users).aggregate(Avg('rating'))
                 movie.users_rating = avg_rating['rating__avg']
             
-            movie.save()
-            
-            movie = MovieSerializer(movie).data
+            movie = MovieSerializer(movie.save()).data
             
             review = ReviewSerializer(review).data
-            
             return self.send_response({'review': review, 'movie':movie}, status=status.HTTP_201_CREATED)
         except Movie.DoesNotExist:
             return self.send_error("Invalid movie slug", status=status.HTTP_404_NOT_FOUND)
