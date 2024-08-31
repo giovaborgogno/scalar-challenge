@@ -1,7 +1,14 @@
 name: CI/CD Pipeline - Test
 
 on:
-  [push, pull_request]:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'socket/**'
+      - 'frontend/**'
+  push:
     # branches:
     #   - main
     paths:
