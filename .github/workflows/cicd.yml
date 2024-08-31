@@ -8,13 +8,6 @@ on:
       - 'backend/**'
       - 'socket/**'
       - 'frontend/**'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'backend/**'
-      - 'socket/**'
-      - 'frontend/**'
   workflow_dispatch:
 
 env:
@@ -57,37 +50,9 @@ jobs:
       matrix:
         service: [backend, frontend, socket]
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      if: ${{ matrix.service == 'backend' }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-        cache: 'pip'
-        cache-dependency-path: backend/requirements.txt
-    - name: Install Dependencies and Run Python Tests
-      if: ${{ matrix.service == 'backend' }}
-      working-directory: ./backend
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        python manage.py test apps
-
-    - name: Set up Node.js
-      if: ${{ matrix.service != 'backend' }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: ${{ matrix.service }}/package-lock.json
-    - name: Install Dependencies and Run Node Tests
-      if: ${{ matrix.service != 'backend' }}
-      working-directory: ./${{ matrix.service }}
-      run: |
-        npm install
-        npm run build --if-present
-        npm run test --if-present 
+    - uses: ./.github/workflows/unit-tests-${{ matrix.service }}.yml
+      secrets: inherit
+    
 
   build-and-publish-images:
     needs: unit-tests
