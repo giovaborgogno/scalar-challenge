@@ -49,9 +49,8 @@ jobs:
       fail-fast: false
       matrix:
         service: [backend, frontend, socket]
-    steps:
-    - uses: ./.github/workflows/unit-tests-${{ matrix.service }}.yml
-      secrets: inherit
+    uses: ./.github/workflows/unit-tests-${{ matrix.service }}.yml
+    secrets: inherit
     
 
   build-and-publish-images:
