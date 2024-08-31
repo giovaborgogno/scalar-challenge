@@ -48,20 +48,6 @@ jobs:
       fail-fast: false
       matrix:
         service: [backend, frontend, socket]
-    services:
-      postgres:
-        image: ${{ (matrix.service == 'backend') && 'postgres:latest' || '' }} # We need postgres service only for backend tests. Workaround since github doesn't allow conditions for starting services: https://github.com/actions/runner/issues/822
-        env:
-          POSTGRES_DB: test
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
     steps:
     - uses: actions/checkout@v4
 
