@@ -1,13 +1,6 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'backend/**'
-      - 'socket/**'
-      - 'frontend/**'
   pull_request:
     branches:
       - main
@@ -15,170 +8,99 @@ on:
       - 'backend/**'
       - 'socket/**'
       - 'frontend/**'
-  workflow_dispatch:
-
-env:
-  # Azure variables
-  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
-  ACR_NAME: ${{ vars.ACR_NAME }}
-  ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
-  ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
-  LOCATION: ${{ vars.LOCATION }}
-  # Backend variables
-  DEBUG: 'False'
-  SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  DOMAIN: ${{ vars.DOMAIN }}
-  EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }} 
-  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
-  EMAIL_USE_SSL: ${{ secrets.EMAIL_USE_SSL }}
-  # Frontend variables
-  NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
-  NEXT_PUBLIC_APP_API_URL: ${{ vars.NEXT_PUBLIC_APP_API_URL }}
-  NEXT_PUBLIC_APP_SOCKET_URL: ${{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}
-  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-  NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
-  # Socket variables
-  SOCKET_DEBUG: ${{ false }}
-  ORIGIN_URL: ${{ vars.ORIGIN_URL }}
-  MONGO_CONNECTION_STRING: ${{ secrets.MONGO_CONNECTION_STRING }}
-  MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'socket/**'
+      - 'frontend/**'
 
 jobs:
-  unit-tests:
+  changes:
+    name: Filter Changes
     runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.filter.outputs.changes }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          backend:
+            - 'backend/**'
+          frontend:
+            - 'frontend/**'
+          socket:
+            - 'socket/**'
+
+  unit-tests:
+    name: Unit Tests - ${{ matrix.service }} 
+    needs: changes
     strategy:
       fail-fast: false
       matrix:
-        service: [backend, frontend, socket]
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      if: ${{ matrix.service == 'backend' }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-        cache: 'pip'
-        cache-dependency-path: backend/requirements.txt
-    - name: Install Dependencies and Run Python Tests
-      if: ${{ matrix.service == 'backend' }}
-      working-directory: ./backend
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        python manage.py test apps
-
-    - name: Set up Node.js
-      if: ${{ matrix.service != 'backend' }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: ${{ matrix.service }}/package-lock.json
-    - name: Install Dependencies and Run Node Tests
-      if: ${{ matrix.service != 'backend' }}
-      working-directory: ./${{ matrix.service }}
-      run: |
-        npm install
-        npm run build --if-present
-        npm run test --if-present 
+        service: ${{ fromJSON(needs.changes.outputs.services) }}
+    uses: ./.github/workflows/unit-tests.yml 
+    with:
+      service: ${{ matrix.service }} 
+    secrets: inherit
 
   build-and-publish-images:
-    needs: unit-tests
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
+    name: Build and Push to ACR - ${{ matrix.service }} 
+    needs: [changes, unit-tests]
+    if: ${{ github.event_name == 'push' }} # if the trigger was a pull request just runs the unit tests
     strategy:
       matrix:
-       service: [backend, frontend, socket]
-    steps:
-    - uses: actions/checkout@v4
-    - name: Docker Login
-      uses: azure/docker-login@v2
-      with:
-        login-server: ${{ env.ACR_NAME }}.azurecr.io
-        username: ${{ env.ACR_USERNAME }}
-        password: ${{ env.ACR_PASSWORD }}
-    - name: Build and Push to ACR
-      uses: docker/build-push-action@v2
-      with:
-        push: true
-        tags: ${{ env.ACR_NAME }}.azurecr.io/${{ matrix.service }}:${{ github.sha }}
-        context: ${{ matrix.service }}
+        service: ${{ fromJSON(needs.changes.outputs.services) }}
+    uses: ./.github/workflows/build.yml   
+    with:
+      service: ${{ matrix.service }}
+    secrets: inherit
 
-  deploy:
-    needs: build-and-publish-images
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+  deploy-staging:
+    name: Deploy to staging - ${{ matrix.service }} 
+    needs: [changes, build-and-publish-images]
     strategy:
-      max-parallel: 1 # We ensure initial deployment to staging and perform integration testing before beginning deployment to production.
       matrix:
-        environment: [staging, production]
-    environment: ${{ matrix.environment }}
-    runs-on: ubuntu-latest
+        service: ${{ fromJSON(needs.changes.outputs.services) }}
     permissions:
       id-token: write
       contents: read
+    uses: ./.github/workflows/deploy.yml
+    with:
+      service: ${{ matrix.service }}
+      targetPort: ${{ matrix.service == 'backend' && '8000' || matrix.service == 'frontend' && '3000' || matrix.service == 'socket' && '4000' }} 
+      environment: staging
+      environmentVariables: |
+        'SECRET_KEY="$SECRET_KEY"' "DATABASE_URL=$DATABASE_URL" "DOMAIN=$DOMAIN" "EMAIL_HOST=$EMAIL_HOST" "EMAIL_HOST_USER=$EMAIL_HOST_USER" "EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD" "EMAIL_PORT=$EMAIL_PORT" "EMAIL_USE_SSL=$EMAIL_USE_SSL" "DEBUG=$SOCKET_DEBUG" "ORIGIN_URL=$ORIGIN_URL" 'MONGO_CONNECTION_STRING="$MONGO_CONNECTION_STRING"' "MONGO_DB_NAME=$MONGO_DB_NAME" "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" "NEXT_PUBLIC_APP_API_URL=$NEXT_PUBLIC_APP_API_URL" "NEXT_PUBLIC_APP_SOCKET_URL=$NEXT_PUBLIC_APP_SOCKET_URL" "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" "NEXTAUTH_URL=$NEXTAUTH_URL"
+    secrets: inherit
+ 
+  integration-tests:
+    name: Integration Tests 
+    needs: deploy-staging
+    environment: staging
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Azure CLI Login
-      uses: azure/login@v2
-      with:
-        client-id: ${{ env.AZURE_CLIENT_ID }}
-        tenant-id: ${{ env.AZURE_TENANT_ID }}
-        subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
-
-    - name: Deploy Backend Container App
-      uses: azure/container-apps-deploy-action@v1
-      with:
-        containerAppName: backend
-        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/backend:${{ github.sha }} 
-        acrName: ${{ env.ACR_NAME}}
-        acrUsername: ${{ env.ACR_USERNAME }}
-        acrPassword: ${{ env.ACR_PASSWORD }}
-        resourceGroup: ${{ env.RESOURCE_GROUP }}
-        containerAppEnvironment: scalarchallenge-${{ matrix.environment }}
-        location: ${{ env.LOCATION }}
-        targetPort: 8000
-        environmentVariables: |
-          "DEBUG=$DEBUG" 'SECRET_KEY="$SECRET_KEY"' "DATABASE_URL=$DATABASE_URL" "DOMAIN=$DOMAIN" "EMAIL_HOST=$EMAIL_HOST" "EMAIL_HOST_USER=$EMAIL_HOST_USER" "EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD" "EMAIL_PORT=$EMAIL_PORT" "EMAIL_USE_SSL=$EMAIL_USE_SSL" 
-
-    - name: Deploy Socket Container App
-      uses: azure/container-apps-deploy-action@v1
-      with:
-        containerAppName: socket
-        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/socket:${{ github.sha }} 
-        acrName: ${{ env.ACR_NAME}}
-        acrUsername: ${{ env.ACR_USERNAME }}
-        acrPassword: ${{ env.ACR_PASSWORD }}
-        resourceGroup: ${{ env.RESOURCE_GROUP }}
-        containerAppEnvironment: scalarchallenge-${{ matrix.environment }}
-        location: ${{ env.LOCATION }}
-        targetPort: 4000
-        environmentVariables: |
-          "DEBUG=$SOCKET_DEBUG" "ORIGIN_URL=$ORIGIN_URL" 'MONGO_CONNECTION_STRING="$MONGO_CONNECTION_STRING"' "MONGO_DB_NAME=$MONGO_DB_NAME"
-
-    - name: Deploy Frontend Container App
-      uses: azure/container-apps-deploy-action@v1
-      with:
-        containerAppName: frontend
-        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/frontend:${{ github.sha }} 
-        acrName: ${{ env.ACR_NAME}}
-        acrUsername: ${{ env.ACR_USERNAME }}
-        acrPassword: ${{ env.ACR_PASSWORD }}
-        resourceGroup: ${{ env.RESOURCE_GROUP }}
-        containerAppEnvironment: scalarchallenge-${{ matrix.environment }}
-        location: ${{ env.LOCATION }}
-        targetPort: 3000
-        environmentVariables: |
-          "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" "NEXT_PUBLIC_APP_API_URL=$NEXT_PUBLIC_APP_API_URL" "NEXT_PUBLIC_APP_SOCKET_URL=$NEXT_PUBLIC_APP_SOCKET_URL" "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" "NEXTAUTH_URL=$NEXTAUTH_URL" 
-
     - name: Run Integration Tests in QA
-      if: ${{ matrix.environment == 'staging' }}
       run: |
         echo "Integration tests to be added here..."
+
+  deploy-production:
+    name: Deploy to production - ${{ matrix.service }} 
+    needs: [changes, integration-tests]
+    strategy:
+      matrix:
+        service: ${{ fromJSON(needs.changes.outputs.services) }}
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/deploy.yml
+    with:
+      service: ${{ matrix.service }}
+      targetPort: ${{ matrix.service == 'backend' && '8000' || matrix.service == 'frontend' && '3000' || matrix.service == 'socket' && '4000' }} 
+      environment: production
+      environmentVariables: |
+        'SECRET_KEY="$SECRET_KEY"' "DATABASE_URL=$DATABASE_URL" "DOMAIN=$DOMAIN" "EMAIL_HOST=$EMAIL_HOST" "EMAIL_HOST_USER=$EMAIL_HOST_USER" "EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD" "EMAIL_PORT=$EMAIL_PORT" "EMAIL_USE_SSL=$EMAIL_USE_SSL" "DEBUG=$SOCKET_DEBUG" "ORIGIN_URL=$ORIGIN_URL" 'MONGO_CONNECTION_STRING="$MONGO_CONNECTION_STRING"' "MONGO_DB_NAME=$MONGO_DB_NAME" "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" "NEXT_PUBLIC_APP_API_URL=$NEXT_PUBLIC_APP_API_URL" "NEXT_PUBLIC_APP_SOCKET_URL=$NEXT_PUBLIC_APP_SOCKET_URL" "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" "NEXTAUTH_URL=$NEXTAUTH_URL"
+    secrets: inherit
