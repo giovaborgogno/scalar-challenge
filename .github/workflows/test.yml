@@ -6,7 +6,6 @@ on:
 jobs:
   build-and-publish-images:
     name: Build and Push to ACR - ${{ matrix.service }} 
-    needs: [changes, unit-tests]
     strategy:
       matrix:
         service: [backend, frontend, socket]
