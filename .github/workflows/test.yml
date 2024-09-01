@@ -1,0 +1,16 @@
+name: test
+
+on:
+  push:
+
+jobs:
+  build-and-publish-images:
+    name: Build and Push to ACR - ${{ matrix.service }} 
+    needs: [changes, unit-tests]
+    strategy:
+      matrix:
+        service: [backend, frontend, socket]
+    uses: ./.github/workflows/build.yml   
+    with:
+      service: ${{ matrix.service }}
+    secrets: inherit
