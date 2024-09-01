@@ -27,4 +27,4 @@ jobs:
         tags: ${{ secrets.ACR_NAME }}.azurecr.io/${{ inputs.service }}:${{ github.sha }}
         context: ${{ inputs.service }}
         cache-from: type=registry,ref=${{ secrets.ACR_NAME }}.azurecr.io/${{ inputs.service }}:buildcache
-        cache-from: type=registry,ref=${{ secrets.ACR_NAME }}.azurecr.io/${{ inputs.service }}:buildcache,mode=max
+        cache-to: type=registry,ref=${{ secrets.ACR_NAME }}.azurecr.io/${{ inputs.service }}:buildcache,mode=max
