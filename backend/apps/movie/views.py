@@ -40,12 +40,9 @@ class ListPublishedMoviesView(StandardAPIView):
                     | Q(genre__icontains=search_term)
                     | Q(plot__icontains=search_term)
                 )
-
-            
+ 
             serializer = MovieSerializer(movies, many=True).data
             return self.paginate_response(request, serializer)
-
-        
 
         except Exception as e:
             return self.send_error("Internal Server Error", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
