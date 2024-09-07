@@ -7,49 +7,11 @@
 - Containerization: Docker
 - Real-time Communication: Socket.io
 - Version Control: GitHub
-- Deployment: Own VPS
+- Deployment: Azure Container Apps
 
-## How to start the APP
-
-### Start the Backend (the database starts automatically)
-
-To get started, run the Backend service using Docker Compose:
-
-```bash
-docker-compose up backend
-```
-Wait for the database installation and configuration to complete.
-
-### Configure the Backend
-
-Open another terminal and execute the following command to access the Backend container:
-
-```bash
-docker exec -it scalar_backend sh
-```
-
-Inside the container, run the following Django commands in order:
-
-```bash
-$ python manage.py collectstatic
-$ python manage.py migrate
-$ python manage.py loaddata init_db.json
-
-# Once you have executed these commands, you can exit the container:
-
-$ exit
-```
-
-### Restart the Container
-
-In the original terminal where you started the Backend (CTRL + C to stop it), restart the container and wait for the downloads to complete:
-
-```bash
-docker-compose up
-```
-  
-# The app is now running in: http://localhost:3000/
-
+## Demo:
+- staging(QA): https://frontend.delightfulstone-0d7b2910.brazilsouth.azurecontainerapps.io
+- production: 
 ## Users:
 
 3 roles for users:
