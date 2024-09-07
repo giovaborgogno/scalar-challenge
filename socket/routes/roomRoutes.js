@@ -7,7 +7,6 @@ const ROOMS = [
     title: "Last Premiere's Chat",
     id: "1",
   },
-
 ];
 
 router.get("/", (req, res) => {
