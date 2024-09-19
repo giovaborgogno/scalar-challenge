@@ -20,12 +20,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: backend/
-      - name: SonarCloud Summary Action
-        uses: thecanadianroot/sonarcloud-summary-action@v1
-        with:
-          github-repository: ${{ github.repository }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request: ${{ github.event.pull_request.number }} 
 
   sonarcloud-frontend:
     name: SonarCloud Frontend
@@ -41,12 +35,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: frontend/
-      - name: SonarCloud Summary Action
-        uses: thecanadianroot/sonarcloud-summary-action@v1
-        with:
-          github-repository: ${{ github.repository }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request: ${{ github.event.pull_request.number }} 
 
   sonarcloud-socket:
     name: SonarCloud Socket
@@ -62,9 +50,3 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: socket/
-      - name: SonarCloud Summary Action
-        uses: thecanadianroot/sonarcloud-summary-action@v1
-        with:
-          github-repository: ${{ github.repository }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request: ${{ github.event.pull_request.number }} 
