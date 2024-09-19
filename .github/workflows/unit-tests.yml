@@ -29,6 +29,7 @@ jobs:
         pip install coverage
         coverage run --omit='**/migrations/*' --omit='**/tests.py' --omit='**/admin.py' manage.py test apps
         coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+        coverage xml
 
     - name: Set up Node.js
       if: ${{ inputs.service != 'backend' }}
@@ -44,3 +45,11 @@ jobs:
         npm install
         npm run build --if-present
         npm run test --if-present
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+          projectBaseDir: ${{ inputs.service }}/
