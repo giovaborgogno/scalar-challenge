@@ -41,7 +41,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: ${{ fromJSON(needs.changes.outputs.services) }}
+        service: [backend, socket, frontend]
+        # service: ${{ fromJSON(needs.changes.outputs.services) }}
     uses: ./.github/workflows/unit-tests.yml 
     with:
       service: ${{ matrix.service }} 
