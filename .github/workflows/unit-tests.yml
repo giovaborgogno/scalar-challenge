@@ -30,6 +30,7 @@ jobs:
         pip install -r requirements.txt
         pip install coverage unittest-xml-reporting
         coverage run --omit='**/migrations/*' --omit='**/tests.py' --omit='**/admin.py' manage.py test apps --testrunner=xmlrunner.extra.djangotestrunner.XMLTestRunner
+        coverage xml -o coverage/cobertura-coverage.xml
 
     - name: Set up Node.js
       if: ${{ inputs.service != 'backend' }}
@@ -52,6 +53,11 @@ jobs:
       with:
         report_paths: '${{ inputs.service }}/TEST-*.xml'
         annotate_only: true
+
+    - name: Code Coverage Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: ${{ inputs.service }}/coverage/cobertura-coverage.xml
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
