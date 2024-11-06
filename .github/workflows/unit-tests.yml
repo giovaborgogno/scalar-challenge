@@ -45,10 +45,9 @@ jobs:
         npm run test --if-present
 
     - name: Test Summary
-      working-directory: ./${{ inputs.service }}
       uses: test-summary/action@v2
       with:
-        paths: "TEST-*.xml"
+        paths: "${{ inputs.service }}/TEST-*.xml"
       if: always()
 
     - name: SonarCloud Scan
