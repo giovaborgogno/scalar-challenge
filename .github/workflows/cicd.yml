@@ -93,12 +93,7 @@ jobs:
       id: health_check
       run: |
         chmod +x check-health.sh
-        ./check-health.sh "{{ vars.NEXT_PUBLIC_APP_API_URL }}" "{{ vars.NEXT_PUBLIC_APP_URL }}" "{{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}" | tee health_check_output.txt
-
-    - name: Save Health Check Output to Step Summary
-      if: success() || failure() # always run even if the previous step fails
-      run: |
-        cat health_check_output.txt >> $GITHUB_STEP_SUMMARY
+        ./check-health.sh "{{ vars.NEXT_PUBLIC_APP_API_URL }}" "{{ vars.NEXT_PUBLIC_APP_URL }}" "{{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}" >> $GITHUB_STEP_SUMMARY
 
     - name: Run Integration Tests in QA
       run: |
