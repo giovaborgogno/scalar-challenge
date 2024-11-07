@@ -10,27 +10,27 @@ import { useRouter } from "next/navigation";
 import Textarea from "@/shared/Textarea/Textarea";
 
 const genres = [
-    {name: 'Action'},
-    {name: 'Comedy'},
-    {name: 'Drama'},
-    {name: 'Fantasy'},
-    {name: 'Horror'},
-    {name: 'Mystery'},
-    {name: 'Romance'},
-    {name: 'Thriller'},
-    {name: 'Western'},
-    {name: 'Crime'},
-    {name: 'Disaster'},
-    {name: 'Psychological'},
-    {name: 'Techno'},
-  ]
+    { name: 'Action' },
+    { name: 'Comedy' },
+    { name: 'Drama' },
+    { name: 'Fantasy' },
+    { name: 'Horror' },
+    { name: 'Mystery' },
+    { name: 'Romance' },
+    { name: 'Thriller' },
+    { name: 'Western' },
+    { name: 'Crime' },
+    { name: 'Disaster' },
+    { name: 'Psychological' },
+    { name: 'Techno' },
+]
 
 
 export default function AddMovieForm() {
 
     const router = useRouter()
 
-    const {data: session} = useSession()
+    const { data: session } = useSession()
 
     const [formData, setFormData] = useState({
         title: '',
@@ -42,18 +42,18 @@ export default function AddMovieForm() {
 
     });
 
-    const { 
+    const {
         title,
         release_date,
         genre,
         plot,
         trailer_url,
         status
-     } = formData;
+    } = formData;
 
     const onChange = (e: any) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    const onSubmit = async (e:any) => {
+    const onSubmit = async (e: any) => {
         e.preventDefault();
         const res = await fetch(`/api/movie/create/`, {
             // Esta es la ruta de tu manejador de registro
@@ -88,7 +88,7 @@ export default function AddMovieForm() {
                 plot: '',
                 trailer_url: '',
                 status: '',
-        
+
             })
         }
     };
@@ -101,75 +101,81 @@ export default function AddMovieForm() {
 
                 {/* ---- */}
 
-                    <div>
-                        <Label>Title</Label>
-                        <Input required className="mt-1.5" 
-                        name={'title'}  
-                        value={title} 
+                <div>
+                    <Label htmlFor="title">Title</Label>
+                    <Input required className="mt-1.5"
+                        id="title"
+                        name={'title'}
+                        value={title}
                         onChange={(e) => onChange(e)}
-                        />
-                    </div>
-                    <div>
-                        <Label>Plot</Label>
-                        <Textarea required className="mt-1.5" 
-                        name={'plot'} 
-                        onChange={(e) => onChange(e)} 
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="plot">Plot</Label>
+                    <Textarea required className="mt-1.5"
+                        id="plot"
+                        name={'plot'}
+                        onChange={(e) => onChange(e)}
                         value={plot} />
-                    </div>
+                </div>
 
                 <div>
-                    <Label>Trailer - Youtube Embebed URL</Label>
+                    <Label htmlFor="trailer_url">Trailer - Youtube Embebed URL</Label>
                     <div className="mt-1.5 flex">
-                        <Input 
+                        <Input
+                            id="trailer_url"
                             className=""
-                            onChange={(e) => onChange(e)} 
+                            onChange={(e) => onChange(e)}
                             type="url"
-                            name={'trailer_url'} 
+                            name={'trailer_url'}
                             value={trailer_url}
                         />
                     </div>
                 </div>
                 <div className="grid sm:grid-flow-col sm:justify-stretch gap-5 sm:gap-3">
-                <div>
-                    <Label>Genre</Label>
-                    <Select className="mt-1.5" 
-                    required
-                    name={'genre'}
-                    defaultValue={''}
-                    onChange={(e) => onChange(e)}>
-                        <option value=""></option>
-                        {
-                        genres.map((genre, index) => (
-                                                <option key={index} value={genre.name}>
-                                                    {genre.name}
-                                                </option>
-                                            ))
-                        }
-                    </Select>
-                </div>
-                <div>
-                    <Label>Release Date</Label>
-                    <Input required className="mt-1.5" 
-                    onChange={(e) => onChange(e)} 
-                    type="date"
-                    name={'release_date'} 
-                    value={release_date} />
-                </div>
-                <div>
-                    <Label>Status</Label>
-                    <Select className="mt-1.5" 
-                    required
-                    name={'status'}
-                    onChange={(e) => onChange(e)}>
-                        
-                    <option value='Draft'>Draft</option>
-                    <option value='Published'>Published</option>
-                                           
-                    </Select>
-                </div>
+                    <div>
+                        <Label htmlFor="genre">Genre</Label>
+                        <Select className="mt-1.5"
+                            required
+                            id="genre"
+                            name={'genre'}
+                            defaultValue={''}
+                            onChange={(e) => onChange(e)}>
+                            <option value=""></option>
+                            {
+                                genres.map((genre, index) => (
+                                    <option key={index} value={genre.name}>
+                                        {genre.name}
+                                    </option>
+                                ))
+                            }
+                        </Select>
+                    </div>
+                    <div>
+                        <Label htmlFor="release_date">Release Date</Label>
+                        <Input required className="mt-1.5"
+                            onChange={(e) => onChange(e)}
+                            type="date"
+                            id="release_date"
+                            name={'release_date'}
+                            value={release_date} />
+                    </div>
+                    <div>
+                        <Label htmlFor="status">Status</Label>
+                        <Select className="mt-1.5"
+                            required
+                            id="status"
+                            name={'status'}
+                            onChange={(e) => onChange(e)}>
 
-                {/* ---- */}
-                
+                            <option value='Draft'>Draft</option>
+                            <option value='Published'>Published</option>
+
+                        </Select>
+                    </div>
+
+                    {/* ---- */}
+
                 </div>
 
                 {/* ---- */}
