@@ -83,21 +83,8 @@ jobs:
   integration-tests:
     name: Integration Tests 
     needs: deploy-staging
-    environment: staging
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Run Health Check
-      id: health_check
-      run: |
-        chmod +x check-health.sh
-        ./check-health.sh "${{ vars.NEXT_PUBLIC_APP_API_URL }}" "${{ vars.NEXT_PUBLIC_APP_URL }}" "${{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}" >> $GITHUB_STEP_SUMMARY
-
-    - name: Run Integration Tests in QA
-      run: |
-        echo "Integration tests to be added here..."
+    uses: ./.github/workflows/integration-tests.yml 
+    secrets: inherit
 
   deploy-production:
     name: Deploy to production - ${{ matrix.service }} 
