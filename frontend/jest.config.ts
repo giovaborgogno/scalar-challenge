@@ -27,6 +27,7 @@ const config: Config = {
     "!**/node_modules/**", // Excluye node_modules
     "!**/*.test.{js,jsx}", // Excluye archivos de prueba
     "!**/coverage/**", // Excluye el directorio de cobertura si ya existe
+    "!**/cypress/**"
   ],
 
   // The directory where Jest should output its coverage files
