@@ -53,6 +53,7 @@ jobs:
       with:
         report_paths: '${{ inputs.service }}/TEST-*.xml'
         annotate_only: true
+        detailed_summary: true
 
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
