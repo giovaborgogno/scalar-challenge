@@ -1,0 +1,39 @@
+name: Integration Tests
+
+on:
+  workflow_call:
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+        checks: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Run Health Check
+      id: health_check
+      run: |
+        chmod +x check-health.sh
+        ./check-health.sh "${{ vars.NEXT_PUBLIC_APP_API_URL }}" "${{ vars.NEXT_PUBLIC_APP_URL }}" "${{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}" >> $GITHUB_STEP_SUMMARY
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Run Integration Tests
+      working-directory: frontend
+      run: |
+        npm install
+        CYPRESS_BASE_URL=${{ vars.NEXT_PUBLIC_APP_URL }} npm run integration-tests
+
+    - name: Publish Integration Tests Report
+      uses: mikepenz/action-junit-report@v5
+      if: success() || failure() # always run even if the previous step fails
+      with:
+        report_paths: 'frontend/cypress/results/TEST-integration.xml'
+        annotate_only: true
