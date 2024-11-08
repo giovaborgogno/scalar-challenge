@@ -6,7 +6,7 @@ export default defineConfig({
     experimentalStudio: true,
     reporter: 'junit',
     reporterOptions: {
-      mochaFile: 'cypress/results/TEST-integration.xml',
+      mochaFile: 'cypress/results/TEST-integration-[hash].xml',
       toConsole: true,
     },
     setupNodeEvents(on, config) {
