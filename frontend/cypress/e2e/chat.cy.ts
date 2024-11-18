@@ -1,4 +1,4 @@
-describe('template spec', () => {
+describe('Chat Tests', () => {
     it('send message in the chat', () => {
         cy.login('user@gmail.com', 'Test-123')
         cy.visit('/')

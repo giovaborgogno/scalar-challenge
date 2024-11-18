@@ -1,4 +1,4 @@
-describe('template spec', () => {
+describe('Login Tests', () => {
   /* ==== Test Created with Cypress Studio ==== */
   it('should login successfully', function () {
     /* ==== Generated with Cypress Studio ==== */

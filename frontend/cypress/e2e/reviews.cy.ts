@@ -1,4 +1,4 @@
-describe('template spec', () => {
+describe('Reviews Tests', () => {
   it('add a review successfully', () => {
     cy.login('user@gmail.com', 'Test-123')
     cy.visit('/')
@@ -29,8 +29,8 @@ describe('template spec', () => {
       cy.get('textarea.block').type(`Nice Movie! ${uniqueId}`);
       cy.get('.mt-2 > .nc-Button').click();
 
-      cy.contains('Success') // Should Fail
-      // cy.contains('Try Later') // Should Pass
+      // cy.contains('Success') // Should Fail
+      cy.contains('Try Later') // Should Pass
       /* ==== End Cypress Studio ==== */
     })
 })

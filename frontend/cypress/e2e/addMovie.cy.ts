@@ -1,7 +1,7 @@
 // Generate a unique identifier for each test run
 const uniqueId = Date.now();
 
-describe('template spec', () => {
+describe('Add Movie Tests', () => {
   it('should add a movie successfully', () => {
     // Get today's date in the format YYYY-MM-DD
     const today = new Date().toISOString().split('T')[0];
