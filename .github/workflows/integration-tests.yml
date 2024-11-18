@@ -32,8 +32,9 @@ jobs:
         CYPRESS_BASE_URL=${{ vars.NEXT_PUBLIC_APP_URL }} npm run integration-tests
 
     - name: Publish Integration Tests Report
-      uses: mikepenz/action-junit-report@v5
-      if: success() || failure() # always run even if the previous step fails
+      uses: test-summary/action@v2
       with:
-        report_paths: 'frontend/cypress/results/TEST-integration-*.xml'
-        annotate_only: true
+        paths: "frontend/cypress/results/TEST-integration-*.xml"
+        show: "all"
+      if: success() || failure() # always run even if the previous step fails
+ 
