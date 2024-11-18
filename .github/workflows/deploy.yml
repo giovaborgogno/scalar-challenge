@@ -56,7 +56,7 @@ jobs:
     - name: Deploy ${{ inputs.service }} Container App
       uses: azure/container-apps-deploy-action@v1
       with:
-        containerAppName: ${{ inputs.service }}
+        containerAppName: ${{ inputs.service }}-${{ inputs.environment }}
         imageToDeploy: ${{ secrets.ACR_NAME }}.azurecr.io/${{ inputs.service }}:${{ github.sha }} 
         acrName: ${{ secrets.ACR_NAME}}
         acrUsername: ${{ secrets.ACR_USERNAME }}

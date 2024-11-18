@@ -29,7 +29,8 @@ describe('template spec', () => {
       cy.get('textarea.block').type(`Nice Movie! ${uniqueId}`);
       cy.get('.mt-2 > .nc-Button').click();
 
-      cy.contains('Try Later')
+      cy.contains('Success') // Should Fail
+      // cy.contains('Try Later') // Should Pass
       /* ==== End Cypress Studio ==== */
     })
 })
