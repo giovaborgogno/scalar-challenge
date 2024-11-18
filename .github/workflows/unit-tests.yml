@@ -30,6 +30,10 @@ jobs:
         pip install -r requirements.txt
         pip install coverage unittest-xml-reporting
         coverage run --omit='**/migrations/*' --omit='**/tests.py' --omit='**/admin.py' manage.py test apps --testrunner=xmlrunner.extra.djangotestrunner.XMLTestRunner
+    - name: Generate Coverage Report
+      if: ${{ (success() || failure()) && inputs.service == 'backend' }}
+      working-directory: ./backend
+      run: |
         coverage xml -o coverage/cobertura-coverage.xml
 
     - name: Set up Node.js
