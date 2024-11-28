@@ -21,7 +21,8 @@ jobs:
     name: Filter Changes
     runs-on: ubuntu-latest
     outputs:
-      services: ${{ steps.filter.outputs.changes }}
+      # services: ${{ steps.filter.outputs.changes }}
+      services: ["backend", "socket", "frontend"] # for testing
     steps:
     - uses: actions/checkout@v4
     - uses: dorny/paths-filter@v3
@@ -42,7 +43,6 @@ jobs:
       fail-fast: false
       matrix:
         service: ${{ fromJSON(needs.changes.outputs.services) }}
-        # service: [backend, socket, frontend] # for testing
     uses: ./.github/workflows/unit-tests.yml 
     with:
       service: ${{ matrix.service }} 
