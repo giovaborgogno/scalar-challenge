@@ -51,10 +51,16 @@ jobs:
   check-tests:
     name: Tests Passed Flag
     needs: unit-tests
+    if: success() || failure()
     runs-on: ubuntu-latest
     steps:
-      - name: Check all tests passed
-        run: echo "All unit tests passed!"
+      - name: Verify if all unit tests passed
+        run: |
+          if [ "${{ needs.unit-tests.result }}" != "success" ]; then
+            echo "Some unit tests failed. Marking check-tests as failed."
+            exit 1
+          fi
+          echo "All unit tests passed successfully!"
 
   build-and-publish-images:
     name: Build and Push to ACR - ${{ matrix.service }} 
