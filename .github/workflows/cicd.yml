@@ -49,7 +49,7 @@ jobs:
     secrets: inherit
 
   check-tests:
-    name: Check Tests Results
+    name: Tests Passed Flag
     needs: unit-tests
     runs-on: ubuntu-latest
     steps:
