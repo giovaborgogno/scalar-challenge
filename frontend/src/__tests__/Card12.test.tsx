@@ -22,29 +22,24 @@ const renderCard12 = (props = {}) => {
   return render(<Card12 post={mockMovie} {...props} />);
 };
 
-describe("Card12 Component", () => {
-  it("renders the movie title", () => {
+describe("Card12", () => {
+  it("renders the Card12 component correctly", () => {
     renderCard12();
+
+    // Check if the movie title is rendered
     const titleElement = screen.getByText(mockMovie.title);
     expect(titleElement).toBeInTheDocument();
-  });
 
-  it("renders the rating correctly", () => {
-    renderCard12();
+    // Check if the rating is rendered correctly
     const ratingElement = screen.getByText((content) => content.includes(mockMovie.rating));
     expect(ratingElement).toBeInTheDocument();
-  });
 
-  it("renders the plot", () => {
-    renderCard12();
+    // Check if the plot is rendered
     const plotElement = screen.getByText(mockMovie.plot);
     expect(plotElement).toBeInTheDocument();
-  });
 
-  it("renders a link with the correct href attribute", () => {
-    renderCard12();
+    // Check if the link has the correct href attribute
     const linkElement = screen.getAllByRole("link", { name: mockMovie.title });
     expect(linkElement[0]).toHaveAttribute("href", `/movie/${mockMovie.slug}`);
   });
-
 });
