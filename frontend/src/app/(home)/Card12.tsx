@@ -21,7 +21,7 @@ const Card12: FC<Card12Props> = ({ post, className = "h-full" }) => {
 
   return (
     <div className={`nc-Card12 group relative flex flex-col ${className}`}>
-      <Heading>Last Premiere 🚀</Heading>
+      <Heading>Last Premiere 😎</Heading>
       <Link
         href={`/movie/${post?.slug}`}
         className="block flex-shrink-0 flex-grow relative lg:w-full h-0 aspect-w-5 lg:aspect-w-8 aspect-h-3 rounded-3xl flex justify-start items-start md:mb-3 "
