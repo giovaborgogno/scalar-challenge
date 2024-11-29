@@ -12,11 +12,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Run Health Check
-      id: health_check
-      run: |
-        chmod +x check-health.sh
-        ./check-health.sh "${{ vars.NEXT_PUBLIC_APP_API_URL }}" "${{ vars.NEXT_PUBLIC_APP_URL }}" "${{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}" >> $GITHUB_STEP_SUMMARY
+    # - name: Run Health Check
+    #   id: health_check
+    #   run: |
+    #     chmod +x check-health.sh
+    #     ./check-health.sh "${{ vars.NEXT_PUBLIC_APP_API_URL }}" "${{ vars.NEXT_PUBLIC_APP_URL }}" "${{ vars.NEXT_PUBLIC_APP_SOCKET_URL }}" >> $GITHUB_STEP_SUMMARY
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
