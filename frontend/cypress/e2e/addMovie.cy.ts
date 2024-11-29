@@ -23,8 +23,8 @@ describe('Add Movie', () => {
     cy.get('.pt-2 > .nc-Button').click();
 
     // Verify success message
-    // cy.contains('Success'); // Should pass
-    cy.contains('Fail!'); // Should fail
+    cy.contains('Success'); // Should pass
+    // cy.contains('Fail!'); // Should fail
 
     // Go to the homepage to confirm the new movie appears
     cy.visit('/');
