@@ -35,7 +35,7 @@ class DetailMovieViewTest(APISimpleTestCase):
     @patch('apps.movie.models.Movie.objects.get')
     def test_get_movie_detail(self, mock_movie_get):
         movie_data = {
-            "title": "Sound of Freedom",
+            "title": "Sound of Freedom 2",
             "slug": "sound-of-freedom",
             "release_date": "2023-06-01",
             "genre": "Thriller",
